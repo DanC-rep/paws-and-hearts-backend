@@ -22,6 +22,9 @@ public static class Inject
 
         services.Configure<AdminOptions>(
             configuration.GetSection(AdminOptions.ADMIN));
+
+        services.Configure<RefreshSessionOptions>(
+            configuration.GetSection(RefreshSessionOptions.REFRESH_SESSION));
         
         services.AddScoped<ITokenProvider, JwtTokenProvider>();   
         
@@ -64,6 +67,8 @@ public static class Inject
         services.AddScoped<RolePermissionManager>();
 
         services.AddScoped<IAccountManager, AccountsManager>();
+
+        services.AddScoped<IRefreshSessionManager, RefreshSessionManager>();
 
         return services;
     }

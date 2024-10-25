@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using PawsAndHearts.Accounts.Domain;
 
 namespace PawsAndHearts.Accounts.Infrastructure.IdentityManagers;
@@ -7,28 +6,27 @@ namespace PawsAndHearts.Accounts.Infrastructure.IdentityManagers;
 public class RolePermissionManager
 {
     private readonly AccountsDbContext _accountsDbContext;
-    private readonly RoleManager<Role> _roleManager;
     
-    public RolePermissionManager(
-        AccountsDbContext accountsDbContext,
-        RoleManager<Role> roleManager)
+    public RolePermissionManager(AccountsDbContext accountsDbContext)
     {
         _accountsDbContext = accountsDbContext;
-        _roleManager = roleManager;
     }
 
-    public async Task AddRangeIfNotExists(Guid roleId, IEnumerable<string> permissions)
+    public async Task AddRangeIfNotExists(
+        Guid roleId, 
+        IEnumerable<string> permissions,
+        CancellationToken cancellationToken = default)
     {
         foreach (var permissionCode in permissions)
         {
             var permission = await _accountsDbContext.Permissions
-                .FirstOrDefaultAsync(p => p.Code == permissionCode);
+                .FirstOrDefaultAsync(p => p.Code == permissionCode, cancellationToken);
             
             if (permission is null)
                 throw new ApplicationException($"Permission code {permissionCode} is not found");
             
             var rolePermissionExists = await _accountsDbContext.RolePermissions
-                .AnyAsync(rp => rp.RoleId == roleId && rp.PermissionId == permission.Id);
+                .AnyAsync(rp => rp.RoleId == roleId && rp.PermissionId == permission.Id, cancellationToken);
             
             if (rolePermissionExists)
                 continue;
@@ -38,9 +36,9 @@ public class RolePermissionManager
                 {
                     RoleId = roleId,
                     PermissionId = permission.Id
-                });
+                }, cancellationToken);
         }
 
-        await _accountsDbContext.SaveChangesAsync();
+        await _accountsDbContext.SaveChangesAsync(cancellationToken);
     }
 }

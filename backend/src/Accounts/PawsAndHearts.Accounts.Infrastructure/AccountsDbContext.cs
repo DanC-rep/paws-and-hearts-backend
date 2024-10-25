@@ -14,6 +14,8 @@ public class AccountsDbContext(IConfiguration configuration)
     
     public DbSet<RolePermission> RolePermissions => Set<RolePermission>();
     
+    public DbSet<RefreshSession> RefreshSessions => Set<RefreshSession>();
+    
     public DbSet<ParticipantAccount> ParticipantAccounts => Set<ParticipantAccount>();
     
     public DbSet<VolunteerAccount> VolunteerAccounts => Set<VolunteerAccount>();

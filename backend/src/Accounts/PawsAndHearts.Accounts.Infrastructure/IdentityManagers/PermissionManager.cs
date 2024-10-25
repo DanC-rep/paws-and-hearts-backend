@@ -15,20 +15,23 @@ public class PermissionManager : IPermissionManager
         _accountsDbContext = accountsDbContext;
     }
 
-    public async Task AddRangeIfExists(IEnumerable<string> permissionsToAdd)
+    public async Task AddRangeIfExists(
+        IEnumerable<string> permissionsToAdd, 
+        CancellationToken cancellationToken = default)
     {
         foreach (var permissionCode in permissionsToAdd)
         {
             var permissionExists = await _accountsDbContext.Permissions
-                .AnyAsync(p => p.Code == permissionCode);
+                .AnyAsync(p => p.Code == permissionCode, cancellationToken);
 
             if (permissionExists)
                 return;
 
-            await _accountsDbContext.Permissions.AddAsync(new Permission { Code = permissionCode });
+            await _accountsDbContext.Permissions
+                .AddAsync(new Permission { Code = permissionCode }, cancellationToken);
         }
 
-        await _accountsDbContext.SaveChangesAsync();
+        await _accountsDbContext.SaveChangesAsync(cancellationToken);
     }
 
     public async Task<Result<IEnumerable<string>, Error>> GetPermissionsByUserId(

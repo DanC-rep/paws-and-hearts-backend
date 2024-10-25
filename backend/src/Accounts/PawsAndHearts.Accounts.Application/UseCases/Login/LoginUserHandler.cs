@@ -4,12 +4,13 @@ using PawsAndHearts.Core.Abstractions;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using PawsAndHearts.Accounts.Application.Interfaces;
+using PawsAndHearts.Accounts.Contracts.Responses;
 using PawsAndHearts.Accounts.Domain;
 using PawsAndHearts.SharedKernel;
 
 namespace PawsAndHearts.Accounts.Application.UseCases.Login;
 
-public class LoginUserHandler : ICommandHandler<string, LoginUserCommand>
+public class LoginUserHandler : ICommandHandler<LoginResponse, LoginUserCommand>
 {
     private readonly UserManager<User> _userManager;
     private readonly ITokenProvider _tokenProvider;
@@ -25,7 +26,7 @@ public class LoginUserHandler : ICommandHandler<string, LoginUserCommand>
         _logger = logger;
     }
 
-    public async Task<Result<string, ErrorList>> Handle(
+    public async Task<Result<LoginResponse, ErrorList>> Handle(
         LoginUserCommand command,
         CancellationToken cancellationToken = default)
     {
@@ -41,10 +42,11 @@ public class LoginUserHandler : ICommandHandler<string, LoginUserCommand>
         if (!passwordConfirmed)
             return Errors.Accounts.InvalidCredentials().ToErrorList();
 
-        var token = _tokenProvider.GenerateAccessToken(user, cancellationToken);
+        var accessToken = _tokenProvider.GenerateAccessToken(user);
+        var refreshToken = await _tokenProvider.GenerateRefreshToken(user, accessToken.Jti, cancellationToken);
         
         _logger.LogInformation("Successfully logged in");
 
-        return token;
+        return new LoginResponse(accessToken.AccessToken, refreshToken);
     }
 }
