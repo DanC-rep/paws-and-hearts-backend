@@ -1,10 +1,12 @@
 ﻿using CSharpFunctionalExtensions;
 using Microsoft.AspNetCore.Mvc;
 using PawsAndHearts.Accounts.Application.UseCases.Login;
+using PawsAndHearts.Accounts.Application.UseCases.RefreshTokens;
 using PawsAndHearts.Accounts.Application.UseCases.Register;
 using PawsAndHearts.Accounts.Application.UseCases.UpdateUserSocialNetworks;
 using PawsAndHearts.Accounts.Application.UseCases.UpdateVolunteerRequisites;
 using PawsAndHearts.Accounts.Contracts.Requests;
+using PawsAndHearts.Accounts.Contracts.Responses;
 using PawsAndHearts.Core.Models;
 using PawsAndHearts.Framework;
 using PawsAndHearts.Framework.Authorization;
@@ -29,12 +31,25 @@ public class AccountsController : ApplicationController
     }
     
     [HttpPost("login")]
-    public async Task<ActionResult<string>> Login(
+    public async Task<ActionResult<LoginResponse>> Login(
         [FromBody] LoginUserRequest request,
         [FromServices] LoginUserHandler handler,
         CancellationToken cancellationToken = default)
     {
         var command = LoginUserCommand.Create(request);
+        
+        var result = await handler.Handle(command, cancellationToken);
+
+        return result.ToResponse();
+    }
+    
+    [HttpPost("refresh")]
+    public async Task<ActionResult<LoginResponse>> RefreshTokens(
+        [FromBody] RefreshTokensRequest request,
+        [FromServices] RefreshTokensHandler handler,
+        CancellationToken cancellationToken = default)
+    {
+        var command = RefreshTokensCommand.Create(request);
         
         var result = await handler.Handle(command, cancellationToken);
 

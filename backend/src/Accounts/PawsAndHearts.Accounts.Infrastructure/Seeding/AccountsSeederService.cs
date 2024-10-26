@@ -46,33 +46,37 @@ public class AccountsSeederService
         _logger = logger;
     }
 
-    public async Task SeedAsync()
+    public async Task SeedAsync(CancellationToken cancellationToken = default)
     {
-        var json = await File.ReadAllTextAsync(SharedKernel.Constants.FilePaths.ACCOUNTS);
+        var json = await File.ReadAllTextAsync(SharedKernel.Constants.FilePaths.ACCOUNTS, cancellationToken);
 
         var seedData = JsonSerializer.Deserialize<RolePermissionOptions>(json)
             ?? throw new ApplicationException("Could not deserialize role permission config");
 
-        await SeedPermissions(seedData);
+        await SeedPermissions(seedData, cancellationToken);
 
-        await SeedRoles(seedData);
+        await SeedRoles(seedData, cancellationToken);
 
-        await SeedRolePermissions(seedData);
+        await SeedRolePermissions(seedData, cancellationToken);
 
-        await SeedAdminAccount();
+        await SeedAdminAccount(cancellationToken);
     }
 
-    private async Task SeedPermissions(RolePermissionOptions seedData)
+    private async Task SeedPermissions(
+        RolePermissionOptions seedData, 
+        CancellationToken cancellationToken = default)
     {
         var permissionsToAdd = seedData.Permissions
             .SelectMany(permissionGroup => permissionGroup.Value);
 
-        await _permissionManager.AddRangeIfExists(permissionsToAdd);
+        await _permissionManager.AddRangeIfExists(permissionsToAdd, cancellationToken);
         
         _logger.LogInformation("Permissions added to database");
     }
 
-    private async Task SeedRoles(RolePermissionOptions seedData)
+    private async Task SeedRoles(
+        RolePermissionOptions seedData, 
+        CancellationToken cancellationToken = default)
     {
         foreach (var role in seedData.Roles.Keys)
         {
@@ -86,7 +90,8 @@ public class AccountsSeederService
     }
 
     private async Task SeedRolePermissions(
-        RolePermissionOptions seedData)
+        RolePermissionOptions seedData,
+        CancellationToken cancellationToken = default)
     {
         foreach (var roleName in seedData.Roles.Keys)
         {
@@ -95,27 +100,29 @@ public class AccountsSeederService
             if (role is null)
                 throw new ApplicationException($"Role {roleName} not found");
             
-            await _rolePermissionManager.AddRangeIfNotExists(role.Id, seedData.Roles[roleName]);
+            await _rolePermissionManager
+                .AddRangeIfNotExists(role.Id, seedData.Roles[roleName], cancellationToken);
         }
         
         _logger.LogInformation("Role permissions added to database");
     }
 
-    private async Task SeedAdminAccount()
+    private async Task SeedAdminAccount(CancellationToken cancellationToken = default)
     {
         var adminExists = await _userManager.Users
-            .FirstOrDefaultAsync(u => u.Email == _adminOptions.Email);
+            .FirstOrDefaultAsync(u => u.Email == _adminOptions.Email, cancellationToken);
 
         if (adminExists is not null)
             return;
             
         
-        var role = await _roleManager.Roles.FirstOrDefaultAsync(r => r.Name == Domain.Constants.ADMIN);
+        var role = await _roleManager.Roles
+            .FirstOrDefaultAsync(r => r.Name == Domain.Constants.ADMIN, cancellationToken);
 
         if (role is null)
             throw new ApplicationException($"Role {Domain.Constants.ADMIN} not found");
 
-        var transaction = await _unitOfWork.BeginTransaction();
+        var transaction = await _unitOfWork.BeginTransaction(cancellationToken);
 
         try
         {
@@ -137,9 +144,9 @@ public class AccountsSeederService
 
             var adminAccount = new AdminAccount(userResult.Value);
             
-            await _accountManager.AddAdminAccount(adminAccount);
+            await _accountManager.AddAdminAccount(adminAccount, cancellationToken);
             
-            await _unitOfWork.SaveChanges();
+            await _unitOfWork.SaveChanges(cancellationToken);
             
             transaction.Commit();
             

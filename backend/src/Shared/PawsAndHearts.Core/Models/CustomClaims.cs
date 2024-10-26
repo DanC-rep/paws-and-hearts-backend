@@ -7,4 +7,6 @@ public static class CustomClaims
     public const string Email = nameof(Email);
 
     public const string Role = nameof(Role);
+
+    public const string Jti = nameof(Jti);
 }

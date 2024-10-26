@@ -15,10 +15,6 @@ public class VolunteerDto
     public int Experience { get; init; }
 
     public string PhoneNumber { get; init; } = default!;
-
-    public IEnumerable<SocialNetworkDto> SocialNetworks { get; init; } = [];
-    
-    public IEnumerable<RequisiteDto> Requisites { get; init; } = [];
     
     public bool IsDeleted { get; init; }
 }

@@ -25,6 +25,12 @@ public static class Errors
         
         public static Error AlreadyUsed(Guid id) =>
             Error.Conflict("value.already.used", $"{id} is already used");
+        
+        public static Error Null(string? name = null)
+        {
+            var label = name ?? "value";
+            return Error.Null("Null.entity", $"{label} is null");
+        }
     }
 
     public static class Files
@@ -46,6 +52,19 @@ public static class Errors
         public static Error InvalidRole()
         {
             return Error.Failure("invalid.role", "Invalid role");
+        }
+    }
+
+    public static class Tokens
+    {
+        public static Error TokenExpired()
+        {
+            return Error.Validation("token.expired", "Token has expired");
+        }
+        
+        public static Error InvalidToken()
+        {
+            return Error.Validation("token.is.invalid", "Token is invalid");
         }
     }
 }
