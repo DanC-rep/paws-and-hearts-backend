@@ -5,12 +5,16 @@ using PawsAndHearts.Core.Abstractions;
 using PawsAndHearts.Core.Enums;
 using PawsAndHearts.Core.Files;
 using PawsAndHearts.Core.Messaging;
+using PawsAndHearts.Core.Options;
+using PawsAndHearts.Framework.BackgroundServices;
 using PawsAndHearts.PetManagement.Application;
 using PawsAndHearts.PetManagement.Application.Interfaces;
+using PawsAndHearts.PetManagement.Infrastructure.BackgroundServices;
 using PawsAndHearts.PetManagement.Infrastructure.DbContexts;
 using PawsAndHearts.PetManagement.Infrastructure.Options;
 using PawsAndHearts.PetManagement.Infrastructure.Providers;
 using PawsAndHearts.PetManagement.Infrastructure.Repositories;
+using PawsAndHearts.PetManagement.Infrastructure.Services;
 using PawsAndHearts.SharedKernel.Interfaces;
 using FileInfo = PawsAndHearts.SharedKernel.FileProvider.FileInfo;
 
@@ -21,16 +25,30 @@ public static class Inject
     public static IServiceCollection AddPetManagementInfrastructure(
         this IServiceCollection services, IConfiguration configuration)
     {
+        services.Configure<SoftDeleteOptions>(
+            configuration.GetSection(SoftDeleteOptions.SOFT_DELETE));
+        
         services
             .AddDbContexts()
             .AddMinio(configuration)
             .AddRepositories()
-            .AddDatabase();
+            .AddDatabase()
+            .AddBackgroundServices();
 
         services.AddSingleton<IMessageQueue<IEnumerable<FileInfo>>,
             FilesCleanerMessageQueue<IEnumerable<FileInfo>>>();
+        
+        return services;
+    }
 
+    private static IServiceCollection AddBackgroundServices(this IServiceCollection services)
+    {
         services.AddScoped<IFilesCleanerService, FilesCleanerService>();
+        services.AddHostedService<FilesCleanerBackgroundService>();
+
+        services.AddScoped<DeleteExpiredVolunteersService>();
+        services.AddScoped<DeleteExpiredPetsService>();
+        services.AddHostedService<DeleteExpiredEntitiesBackgroundService>();
 
         return services;
     }

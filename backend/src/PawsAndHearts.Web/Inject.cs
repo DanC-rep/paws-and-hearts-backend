@@ -11,6 +11,7 @@ using PawsAndHearts.BreedManagement.Infrastructure;
 using PawsAndHearts.BreedManagement.Presentation;
 using PawsAndHearts.Core.Options;
 using PawsAndHearts.Framework.Authorization;
+using PawsAndHearts.Framework.BackgroundServices;
 using PawsAndHearts.PetManagement.Application;
 using PawsAndHearts.PetManagement.Infrastructure;
 using PawsAndHearts.PetManagement.Presentation;
@@ -82,6 +83,15 @@ public static class Inject
                 }
             });
         });
+
+        return services;
+    }
+
+    public static IServiceCollection AddCustomOptions(
+        this IServiceCollection services, IConfiguration configuration)
+    {
+        services.Configure<SoftDeleteOptions>(
+            configuration.GetSection(SoftDeleteOptions.SOFT_DELETE));
 
         return services;
     }

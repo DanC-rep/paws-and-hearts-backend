@@ -194,4 +194,10 @@ public class Volunteer : SoftDeletableEntity<VolunteerId>
     {
         pet.DeletePhotos();
     }
+
+    public void DeleteExpiredPets(int expiredDays)
+    {
+        _pets.RemoveAll(p => p.DeletionDate != null
+                             && DateTime.UtcNow >= p.DeletionDate.Value.AddDays(expiredDays));
+    }
 }
