@@ -21,6 +21,8 @@ public static class Constants
     public static readonly int MAX_FILE_SIZE = 10 * 1024 * 1024;
     
     public static readonly string[] PERMITTED_HELP_STATUSES_FROM_VOLUNTEER = ["LookingForHome", "FoundHome"];
+
+    public static readonly int FREQUENCY_OF_DELETION = 24;
     
     public static class FilePaths
     {
