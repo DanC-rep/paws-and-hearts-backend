@@ -1,15 +1,16 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using PawsAndHearts.Accounts.Domain;
+using PawsAndHearts.Accounts.Infrastructure.DbContexts;
 
 namespace PawsAndHearts.Accounts.Infrastructure.IdentityManagers;
 
 public class RolePermissionManager
 {
-    private readonly AccountsDbContext _accountsDbContext;
+    private readonly AccountsWriteDbContext _accountsWriteDbContext;
     
-    public RolePermissionManager(AccountsDbContext accountsDbContext)
+    public RolePermissionManager(AccountsWriteDbContext accountsWriteDbContext)
     {
-        _accountsDbContext = accountsDbContext;
+        _accountsWriteDbContext = accountsWriteDbContext;
     }
 
     public async Task AddRangeIfNotExists(
@@ -19,19 +20,19 @@ public class RolePermissionManager
     {
         foreach (var permissionCode in permissions)
         {
-            var permission = await _accountsDbContext.Permissions
+            var permission = await _accountsWriteDbContext.Permissions
                 .FirstOrDefaultAsync(p => p.Code == permissionCode, cancellationToken);
             
             if (permission is null)
                 throw new ApplicationException($"Permission code {permissionCode} is not found");
             
-            var rolePermissionExists = await _accountsDbContext.RolePermissions
+            var rolePermissionExists = await _accountsWriteDbContext.RolePermissions
                 .AnyAsync(rp => rp.RoleId == roleId && rp.PermissionId == permission.Id, cancellationToken);
             
             if (rolePermissionExists)
                 continue;
 
-            await _accountsDbContext.RolePermissions.AddAsync(
+            await _accountsWriteDbContext.RolePermissions.AddAsync(
                 new RolePermission
                 {
                     RoleId = roleId,
@@ -39,6 +40,6 @@ public class RolePermissionManager
                 }, cancellationToken);
         }
 
-        await _accountsDbContext.SaveChangesAsync(cancellationToken);
+        await _accountsWriteDbContext.SaveChangesAsync(cancellationToken);
     }
 }

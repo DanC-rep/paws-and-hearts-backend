@@ -1,4 +1,3 @@
-using PawsAndHearts.Accounts.Infrastructure;
 using PawsAndHearts.Accounts.Infrastructure.Seeding;
 using PawsAndHearts.Web.Extensions;
 using Serilog;

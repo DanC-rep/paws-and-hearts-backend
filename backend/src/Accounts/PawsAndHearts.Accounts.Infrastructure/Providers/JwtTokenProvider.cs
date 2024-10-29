@@ -7,6 +7,7 @@ using Microsoft.IdentityModel.Tokens;
 using PawsAndHearts.Accounts.Application.Interfaces;
 using PawsAndHearts.Accounts.Application.Models;
 using PawsAndHearts.Accounts.Domain;
+using PawsAndHearts.Accounts.Infrastructure.DbContexts;
 using PawsAndHearts.Core.Models;
 using PawsAndHearts.Core.Options;
 using PawsAndHearts.Framework.Authorization;
@@ -18,16 +19,16 @@ public class JwtTokenProvider : ITokenProvider
 {
     private readonly JwtOptions _jwtOptions;
     private readonly RefreshSessionOptions _refreshSessionOptions;
-    private readonly AccountsDbContext _accountsDbContext;
+    private readonly AccountsWriteDbContext _accountsWriteDbContext;
     
     public JwtTokenProvider(
         IOptions<JwtOptions> jwtOptions,
         IOptions<RefreshSessionOptions> refreshSessionOptions,
-        AccountsDbContext accountsDbContext)
+        AccountsWriteDbContext accountsWriteDbContext)
     {
         _jwtOptions = jwtOptions.Value;
         _refreshSessionOptions = refreshSessionOptions.Value;
-        _accountsDbContext = accountsDbContext;
+        _accountsWriteDbContext = accountsWriteDbContext;
     }
     
     public JwtTokenResult GenerateAccessToken(User user)
@@ -74,8 +75,8 @@ public class JwtTokenProvider : ITokenProvider
             RefreshToken = Guid.NewGuid()
         };
 
-        _accountsDbContext.RefreshSessions.Add(refreshSession);
-        await _accountsDbContext.SaveChangesAsync(cancellationToken);
+        _accountsWriteDbContext.RefreshSessions.Add(refreshSession);
+        await _accountsWriteDbContext.SaveChangesAsync(cancellationToken);
 
         return refreshSession.RefreshToken;
     }

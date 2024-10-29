@@ -1,7 +1,5 @@
-using System.Text.Json;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using PawsAndHearts.Core.Dtos;
 using PawsAndHearts.PetManagement.Contracts.Dtos;
 
 namespace PawsAndHearts.PetManagement.Infrastructure.Configurations.Read;

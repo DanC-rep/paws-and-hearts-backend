@@ -5,9 +5,9 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using PawsAndHearts.Accounts.Domain;
 
-namespace PawsAndHearts.Accounts.Infrastructure;
+namespace PawsAndHearts.Accounts.Infrastructure.DbContexts;
 
-public class AccountsDbContext(IConfiguration configuration) 
+public class AccountsWriteDbContext(IConfiguration configuration) 
     : IdentityDbContext<User, Role, Guid>
 {
     public DbSet<Permission> Permissions => Set<Permission>();
@@ -53,7 +53,7 @@ public class AccountsDbContext(IConfiguration configuration)
             .ToTable("user_roles");
         
         modelBuilder.ApplyConfigurationsFromAssembly(
-            typeof(AccountsDbContext).Assembly,
+            typeof(AccountsWriteDbContext).Assembly,
             type => type.FullName?.Contains("Configuration.Write") ?? false);
 
         modelBuilder.HasDefaultSchema("accounts");
