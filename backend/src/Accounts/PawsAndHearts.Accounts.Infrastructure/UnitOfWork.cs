@@ -1,27 +1,28 @@
 ﻿using System.Data;
 using Microsoft.EntityFrameworkCore.Storage;
+using PawsAndHearts.Accounts.Infrastructure.DbContexts;
 using PawsAndHearts.Core.Abstractions;
 
 namespace PawsAndHearts.Accounts.Infrastructure;
 
 public class UnitOfWork : IUnitOfWork
 {
-    private readonly AccountsDbContext _dbContext;
+    private readonly AccountsWriteDbContext _writeDbContext;
 
-    public UnitOfWork(AccountsDbContext dbContext)
+    public UnitOfWork(AccountsWriteDbContext writeDbContext)
     {
-        _dbContext = dbContext;
+        _writeDbContext = writeDbContext;
     }
 
     public async Task<IDbTransaction> BeginTransaction(CancellationToken cancellationToken = default)
     {
-        var transaction = await _dbContext.Database.BeginTransactionAsync(cancellationToken);
+        var transaction = await _writeDbContext.Database.BeginTransactionAsync(cancellationToken);
 
         return transaction.GetDbTransaction();
     }
 
     public async Task SaveChanges(CancellationToken cancellationToken = default)
     {
-        await _dbContext.SaveChangesAsync(cancellationToken);
+        await _writeDbContext.SaveChangesAsync(cancellationToken);
     }
 }

@@ -2,6 +2,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using PawsAndHearts.Accounts.Application.Interfaces;
 using PawsAndHearts.Accounts.Domain;
+using PawsAndHearts.Accounts.Infrastructure.DbContexts;
 using PawsAndHearts.Accounts.Infrastructure.IdentityManagers;
 using PawsAndHearts.Accounts.Infrastructure.Providers;
 using PawsAndHearts.Accounts.Infrastructure.Seeding;
@@ -17,22 +18,13 @@ public static class Inject
         this IServiceCollection services,
         IConfiguration configuration)
     {
-        services.Configure<JwtOptions>(
-                configuration.GetSection(JwtOptions.JWT));
+        services.ConfigureCustomOptions(configuration);
 
-        services.Configure<AdminOptions>(
-            configuration.GetSection(AdminOptions.ADMIN));
-
-        services.Configure<RefreshSessionOptions>(
-            configuration.GetSection(RefreshSessionOptions.REFRESH_SESSION));
+        services.AddDatabase();
         
         services.AddScoped<ITokenProvider, JwtTokenProvider>();   
         
         services.RegisterIdentity();
-        
-        services.AddScoped<AccountsDbContext>();
-
-        services.AddKeyedScoped<IUnitOfWork, UnitOfWork>(Modules.Accounts);
 
         services.AddSingleton<AccountSeeder>();
 
@@ -53,7 +45,33 @@ public static class Inject
                 options.Password.RequiredUniqueChars = 0;
                 options.Password.RequiredLength = 8;
             })
-            .AddEntityFrameworkStores<AccountsDbContext>();
+            .AddEntityFrameworkStores<AccountsWriteDbContext>();
+
+        return services;
+    }
+
+    private static IServiceCollection AddDatabase(this IServiceCollection services)
+    {
+        services.AddScoped<AccountsWriteDbContext>();
+
+        services.AddScoped<IReadDbContext, AccountsReadDbContext>();
+
+        services.AddKeyedScoped<IUnitOfWork, UnitOfWork>(Modules.Accounts);
+
+        return services;
+    }
+
+    private static IServiceCollection ConfigureCustomOptions(
+        this IServiceCollection services, IConfiguration configuration)
+    {
+        services.Configure<JwtOptions>(
+            configuration.GetSection(JwtOptions.JWT));
+
+        services.Configure<AdminOptions>(
+            configuration.GetSection(AdminOptions.ADMIN));
+
+        services.Configure<RefreshSessionOptions>(
+            configuration.GetSection(RefreshSessionOptions.REFRESH_SESSION));
 
         return services;
     }

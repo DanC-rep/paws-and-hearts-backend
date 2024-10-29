@@ -2,16 +2,17 @@
 using Microsoft.EntityFrameworkCore;
 using PawsAndHearts.Accounts.Application.Interfaces;
 using PawsAndHearts.Accounts.Domain;
+using PawsAndHearts.Accounts.Infrastructure.DbContexts;
 using PawsAndHearts.SharedKernel;
 
 namespace PawsAndHearts.Accounts.Infrastructure.IdentityManagers;
 
-public class RefreshSessionManager(AccountsDbContext accountsDbContext) : IRefreshSessionManager
+public class RefreshSessionManager(AccountsWriteDbContext accountsWriteDbContext) : IRefreshSessionManager
 {
     public async Task<Result<RefreshSession, Error>> GetByRefreshToken(
         Guid refreshToken, CancellationToken cancellationToken = default)
     {
-        var refreshSession = await accountsDbContext.RefreshSessions
+        var refreshSession = await accountsWriteDbContext.RefreshSessions
             .Include(r => r.User)
             .ThenInclude(u => u.Roles)
             .FirstOrDefaultAsync(r => r.RefreshToken == refreshToken, cancellationToken);
@@ -24,6 +25,6 @@ public class RefreshSessionManager(AccountsDbContext accountsDbContext) : IRefre
 
     public void Delete(RefreshSession refreshSession)
     {
-        accountsDbContext.RefreshSessions.Remove(refreshSession);
+        accountsWriteDbContext.RefreshSessions.Remove(refreshSession);
     }
 }

@@ -1,10 +1,12 @@
 ﻿using CSharpFunctionalExtensions;
 using Microsoft.AspNetCore.Mvc;
+using PawsAndHearts.Accounts.Application.Queries.GetUserById;
 using PawsAndHearts.Accounts.Application.UseCases.Login;
 using PawsAndHearts.Accounts.Application.UseCases.RefreshTokens;
 using PawsAndHearts.Accounts.Application.UseCases.Register;
 using PawsAndHearts.Accounts.Application.UseCases.UpdateUserSocialNetworks;
 using PawsAndHearts.Accounts.Application.UseCases.UpdateVolunteerRequisites;
+using PawsAndHearts.Accounts.Contracts.Dtos;
 using PawsAndHearts.Accounts.Contracts.Requests;
 using PawsAndHearts.Accounts.Contracts.Responses;
 using PawsAndHearts.Core.Models;
@@ -108,6 +110,19 @@ public class AccountsController : ApplicationController
         var command = UpdateVolunteerRequisitesCommand.Create(request, userId);
         
         var result = await handler.Handle(command, cancellationToken);
+
+        return result.ToResponse();
+    }
+
+    [HttpGet("{userId:guid}")]
+    public async Task<ActionResult<UserDto>> GetUserById(
+        [FromRoute] Guid userId,
+        [FromServices] GetUserByIdHandler handler,
+        CancellationToken cancellationToken = default)
+    {
+        var query = new GetUserByIdQuery(userId);
+        
+        var result = await handler.Handle(query, cancellationToken);
 
         return result.ToResponse();
     }
