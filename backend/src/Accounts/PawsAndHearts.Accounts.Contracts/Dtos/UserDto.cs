@@ -15,8 +15,6 @@ public class UserDto
     public string UserName { get; init; } = default!;
 
     public List<RoleDto> Roles { get; init; } = [];
-    
-    public List<UserRolesDto> UserRoles { get; init; } = [];
 
     public IEnumerable<SocialNetworkDto>? SocialNetworks { get; init; } = [];
     

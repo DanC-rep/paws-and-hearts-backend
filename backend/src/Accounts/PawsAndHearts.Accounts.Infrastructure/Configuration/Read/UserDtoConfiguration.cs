@@ -33,10 +33,10 @@ public class UserDtoConfiguration : IEntityTypeConfiguration<UserDto>
             .HasForeignKey<VolunteerAccountDto>(v => v.UserId);
         
         builder.HasMany(u => u.Roles)
-            .WithMany(r => r.Users)
+            .WithMany()
             .UsingEntity<UserRolesDto>(
-                l => l.HasOne<RoleDto>(e => e.Role).WithMany(u => u.UserRoles),
-                r => r.HasOne<UserDto>(e => e.User).WithMany(u => u.UserRoles)
+                ur => ur.HasOne(ur => ur.Role).WithMany().HasForeignKey(ur => ur.RoleId),
+                ur => ur.HasOne(ur => ur.User).WithMany().HasForeignKey(ur => ur.UserId)
             );
     }
 }
