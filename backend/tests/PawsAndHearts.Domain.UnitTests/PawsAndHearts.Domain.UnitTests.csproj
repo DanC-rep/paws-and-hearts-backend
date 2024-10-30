@@ -27,6 +27,8 @@
     <ItemGroup>
       <ProjectReference Include="..\..\src\PetManagement\PawsAndHearts.PetManagement.Domain\PawsAndHearts.PetManagement.Domain.csproj" />
       <ProjectReference Include="..\..\src\Shared\PawsAndHearts.SharedKernel\PawsAndHearts.SharedKernel.csproj" />
+      <ProjectReference Include="..\..\src\VolunteerRequests\PawsAndHearts.VolunteerRequests.Domain\PawsAndHearts.VolunteerRequests.Domain.csproj" />
+      <ProjectReference Include="..\..\src\VolunteerRequest\PawsAndHearts.VolunteerRequests.Domain\PawsAndHearts.VolunteerRequests.Domain.csproj" />
     </ItemGroup>
 
 </Project>
