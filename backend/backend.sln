@@ -66,6 +66,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "VolunteerRequests", "Volunt
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PawsAndHearts.VolunteerRequests.Domain", "src\VolunteerRequests\PawsAndHearts.VolunteerRequests.Domain\PawsAndHearts.VolunteerRequests.Domain.csproj", "{84F0F90D-6A6A-403F-9502-0271EB973DAC}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Discussions", "Discussions", "{B789C058-6633-4C59-9E28-4728255559AA}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PawsAndHearts.Discussions.Domain", "src\Discussions\PawsAndHearts.Discussions.Domain\PawsAndHearts.Discussions.Domain.csproj", "{75FC02C2-FAB7-4C2E-A79E-DE41E3E6B7F5}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -160,6 +164,10 @@ Global
 		{84F0F90D-6A6A-403F-9502-0271EB973DAC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{84F0F90D-6A6A-403F-9502-0271EB973DAC}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{84F0F90D-6A6A-403F-9502-0271EB973DAC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{75FC02C2-FAB7-4C2E-A79E-DE41E3E6B7F5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{75FC02C2-FAB7-4C2E-A79E-DE41E3E6B7F5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{75FC02C2-FAB7-4C2E-A79E-DE41E3E6B7F5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{75FC02C2-FAB7-4C2E-A79E-DE41E3E6B7F5}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -192,5 +200,7 @@ Global
 		{75362CB7-20C8-4353-9480-13A7EA81A181} = {0734BE71-56C8-4472-BC63-A919370DC355}
 		{47860D0A-E3E8-43ED-B921-69534FDC012F} = {99133825-187C-4678-A302-9F6347FEF1F2}
 		{84F0F90D-6A6A-403F-9502-0271EB973DAC} = {47860D0A-E3E8-43ED-B921-69534FDC012F}
+		{B789C058-6633-4C59-9E28-4728255559AA} = {99133825-187C-4678-A302-9F6347FEF1F2}
+		{75FC02C2-FAB7-4C2E-A79E-DE41E3E6B7F5} = {B789C058-6633-4C59-9E28-4728255559AA}
 	EndGlobalSection
 EndGlobal

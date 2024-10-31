@@ -25,6 +25,7 @@
     </ItemGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\..\src\Discussions\PawsAndHearts.Discussions.Domain\PawsAndHearts.Discussions.Domain.csproj" />
       <ProjectReference Include="..\..\src\PetManagement\PawsAndHearts.PetManagement.Domain\PawsAndHearts.PetManagement.Domain.csproj" />
       <ProjectReference Include="..\..\src\Shared\PawsAndHearts.SharedKernel\PawsAndHearts.SharedKernel.csproj" />
       <ProjectReference Include="..\..\src\VolunteerRequests\PawsAndHearts.VolunteerRequests.Domain\PawsAndHearts.VolunteerRequests.Domain.csproj" />
