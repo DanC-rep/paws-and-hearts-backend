@@ -2,7 +2,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using PawsAndHearts.Core.Abstractions;
 using PawsAndHearts.Core.Enums;
-using PawsAndHearts.VolunteerRequests.Contracts.Interfaces;
+using PawsAndHearts.VolunteerRequests.Application.Interfaces;
 using PawsAndHearts.VolunteerRequests.Infrastructure.DbContexts;
 using PawsAndHearts.VolunteerRequests.Infrastructure.Repositories;
 

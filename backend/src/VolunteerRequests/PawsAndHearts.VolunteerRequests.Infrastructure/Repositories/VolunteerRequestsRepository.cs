@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using PawsAndHearts.SharedKernel;
 using PawsAndHearts.SharedKernel.ValueObjects.Ids;
-using PawsAndHearts.VolunteerRequests.Contracts.Interfaces;
+using PawsAndHearts.VolunteerRequests.Application.Interfaces;
 using PawsAndHearts.VolunteerRequests.Domain.Entities;
 using PawsAndHearts.VolunteerRequests.Infrastructure.DbContexts;
 

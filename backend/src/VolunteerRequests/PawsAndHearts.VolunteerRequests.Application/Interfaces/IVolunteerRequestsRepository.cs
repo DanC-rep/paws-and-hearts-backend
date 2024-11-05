@@ -3,7 +3,7 @@ using PawsAndHearts.SharedKernel;
 using PawsAndHearts.SharedKernel.ValueObjects.Ids;
 using PawsAndHearts.VolunteerRequests.Domain.Entities;
 
-namespace PawsAndHearts.VolunteerRequests.Contracts.Interfaces;
+namespace PawsAndHearts.VolunteerRequests.Application.Interfaces;
 
 public interface IVolunteerRequestsRepository
 {
