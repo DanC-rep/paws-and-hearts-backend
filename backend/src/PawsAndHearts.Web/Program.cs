@@ -21,7 +21,9 @@ public class Program
         builder.Services
             .AddAccountsModule(builder.Configuration)
             .AddBreedManagementModule(builder.Configuration)
-            .AddPetManagementModule(builder.Configuration);
+            .AddPetManagementModule(builder.Configuration)
+            .AddDiscussionsModule(builder.Configuration)
+            .AddVolunteerRequestsModule(builder.Configuration);
 
         builder.Services.AddAuthServices(builder.Configuration);
 

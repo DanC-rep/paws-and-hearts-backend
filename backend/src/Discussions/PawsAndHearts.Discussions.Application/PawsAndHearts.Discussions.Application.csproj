@@ -1,0 +1,17 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net8.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\..\Shared\PawsAndHearts.Core\PawsAndHearts.Core.csproj" />
+      <ProjectReference Include="..\..\Shared\PawsAndHearts.Framework\PawsAndHearts.Framework.csproj" />
+      <ProjectReference Include="..\..\Shared\PawsAndHearts.SharedKernel\PawsAndHearts.SharedKernel.csproj" />
+      <ProjectReference Include="..\PawsAndHearts.Discussions.Contracts\PawsAndHearts.Discussions.Contracts.csproj" />
+      <ProjectReference Include="..\PawsAndHearts.Discussions.Domain\PawsAndHearts.Discussions.Domain.csproj" />
+    </ItemGroup>
+
+</Project>

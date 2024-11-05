@@ -33,11 +33,15 @@
     <ProjectReference Include="..\BreedManagement\PawsAndHearts.BreedManagement.Application\PawsAndHearts.BreedManagement.Application.csproj" />
     <ProjectReference Include="..\BreedManagement\PawsAndHearts.BreedManagement.Infrastructure\PawsAndHearts.BreedManagement.Infrastructure.csproj" />
     <ProjectReference Include="..\BreedManagement\PawsAndHearts.BreedManagement.Presentation\PawsAndHearts.BreedManagement.Presentation.csproj" />
+    <ProjectReference Include="..\Discussions\PawsAndHearts.Discussions.Infrastructure\PawsAndHearts.Discussions.Infrastructure.csproj" />
+    <ProjectReference Include="..\Discussions\PawsAndHearts.Discussions.Presentation\PawsAndHearts.Discussions.Presentation.csproj" />
     <ProjectReference Include="..\PetManagement\PawsAndHearts.PetManagement.Application\PawsAndHearts.PetManagement.Application.csproj" />
     <ProjectReference Include="..\PetManagement\PawsAndHearts.PetManagement.Infrastructure\PawsAndHearts.PetManagement.Infrastructure.csproj" />
     <ProjectReference Include="..\PetManagement\PawsAndHearts.PetManagement.Presentation\PawsAndHearts.PetManagement.Presentation.csproj" />
     <ProjectReference Include="..\Shared\PawsAndHearts.Core\PawsAndHearts.Core.csproj" />
     <ProjectReference Include="..\Shared\PawsAndHearts.SharedKernel\PawsAndHearts.SharedKernel.csproj" />
+    <ProjectReference Include="..\VolunteerRequests\PawsAndHearts.VolunteerRequests.Infrastructure\PawsAndHearts.VolunteerRequests.Infrastructure.csproj" />
+    <ProjectReference Include="..\VolunteerRequests\PawsAndHearts.VolunteerRequests.Presentation\PawsAndHearts.VolunteerRequests.Presentation.csproj" />
   </ItemGroup>
 
 </Project>

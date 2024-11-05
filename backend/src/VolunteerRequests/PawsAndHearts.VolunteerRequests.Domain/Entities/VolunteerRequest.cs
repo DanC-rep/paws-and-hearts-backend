@@ -8,6 +8,11 @@ namespace PawsAndHearts.VolunteerRequests.Domain.Entities;
 
 public class VolunteerRequest : Entity<VolunteerRequestId>
 {
+    private VolunteerRequest(VolunteerRequestId id) : base(id)
+    {
+        
+    }
+    
     public VolunteerRequest(
         VolunteerRequestId id,
         Guid userId,

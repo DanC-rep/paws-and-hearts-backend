@@ -4,5 +4,7 @@ public enum Modules
 {
     PetManagement,
     BreedManagement,
-    Accounts
+    Accounts,
+    Discussions,
+    VolunteerRequests
 }
