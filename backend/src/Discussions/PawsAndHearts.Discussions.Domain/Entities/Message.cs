@@ -13,6 +13,8 @@ public class Message : Entity<MessageId>
     
     public bool IsEdited { get; private set; }
 
+    public DiscussionId DiscussionId { get; private set; }
+
     private Message(MessageId id) : base(id)
     {
     }

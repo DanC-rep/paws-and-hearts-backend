@@ -10,11 +10,13 @@ using PawsAndHearts.BreedManagement.Application;
 using PawsAndHearts.BreedManagement.Infrastructure;
 using PawsAndHearts.BreedManagement.Presentation;
 using PawsAndHearts.Core.Options;
+using PawsAndHearts.Discussions.Infrastructure;
 using PawsAndHearts.Framework.Authorization;
 using PawsAndHearts.Framework.BackgroundServices;
 using PawsAndHearts.PetManagement.Application;
 using PawsAndHearts.PetManagement.Infrastructure;
 using PawsAndHearts.PetManagement.Presentation;
+using PawsAndHearts.VolunteerRequests.Infrastructure;
 using Serilog;
 using Serilog.Events;
 
@@ -145,6 +147,24 @@ public static class Inject
             .AddPetManagementInfrastructure(configuration)
             .AddPetManagementApplication()
             .AddPetManagementPresentation();
+
+        return services;
+    }
+
+    public static IServiceCollection AddDiscussionsModule(
+        this IServiceCollection services,
+        IConfiguration configuration)
+    {
+        services.AddDiscussionsInfrastructure(configuration);
+
+        return services;
+    }
+    
+    public static IServiceCollection AddVolunteerRequestsModule(
+        this IServiceCollection services,
+        IConfiguration configuration)
+    {
+        services.AddVolunteerRequestsInfrastructure(configuration);
 
         return services;
     }
