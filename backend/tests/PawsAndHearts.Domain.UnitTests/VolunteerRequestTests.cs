@@ -33,11 +33,13 @@ public class VolunteerRequestTests
         var adminId = Guid.NewGuid();
         var discussionId = Guid.NewGuid();
 
+        var rejectionComment = RejectionComment.Create("comment").Value;
+
         var volunteerRequest = CreateVolunteerRequest();
 
         // act
         volunteerRequest.TakeRequestForSubmit(adminId, discussionId);
-        volunteerRequest.Reject("comment");
+        volunteerRequest.Reject(rejectionComment);
 
         // assert
         volunteerRequest.Status.Should().Be(VolunteerRequestStatus.Rejected);
@@ -50,11 +52,13 @@ public class VolunteerRequestTests
         var adminId = Guid.NewGuid();
         var discussionId = Guid.NewGuid();
 
+        var rejectionComment = RejectionComment.Create("comment").Value;
+
         var volunteerRequest = CreateVolunteerRequest();
 
         // act
         volunteerRequest.TakeRequestForSubmit(adminId, discussionId);
-        volunteerRequest.SendForRevision("comment");
+        volunteerRequest.SendForRevision(rejectionComment);
         volunteerRequest.ResendVolunteerRequest();
         volunteerRequest.Approve();
 
@@ -68,14 +72,15 @@ public class VolunteerRequestTests
         // arrange
         var adminId = Guid.NewGuid();
         var discussionId = Guid.NewGuid();
+        var rejectionComment = RejectionComment.Create("comment").Value;
 
         var volunteerRequest = CreateVolunteerRequest();
 
         // act
         volunteerRequest.TakeRequestForSubmit(adminId, discussionId);
-        volunteerRequest.SendForRevision("comment");
+        volunteerRequest.SendForRevision(rejectionComment);
         volunteerRequest.ResendVolunteerRequest();
-        volunteerRequest.Reject("comment");
+        volunteerRequest.Reject(rejectionComment);
 
         // assert
         volunteerRequest.Status.Should().Be(VolunteerRequestStatus.Rejected);
@@ -90,10 +95,8 @@ public class VolunteerRequestTests
         var userId = Guid.NewGuid();
 
         var volunteerInfo = new VolunteerInfo(
-            FullName.Create("abc", "abc", "anc").Value,
-            PhoneNumber.Create("89206679987").Value,
             Experience.Create(10).Value,
-            new List<SocialNetwork>());
+            new List<Requisite>());
 
         var volunteerRequest = new VolunteerRequest(
             volunteerRequestId,

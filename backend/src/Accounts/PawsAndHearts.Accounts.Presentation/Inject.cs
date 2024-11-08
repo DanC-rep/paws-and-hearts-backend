@@ -5,7 +5,7 @@ namespace PawsAndHearts.Accounts.Presentation;
 
 public static class Inject
 {
-    public static IServiceCollection AddAAccountsPresentation(this IServiceCollection services)
+    public static IServiceCollection AddAccountsPresentation(this IServiceCollection services)
     {
         services.AddScoped<IAccountsContract, AccountsContract>();
 

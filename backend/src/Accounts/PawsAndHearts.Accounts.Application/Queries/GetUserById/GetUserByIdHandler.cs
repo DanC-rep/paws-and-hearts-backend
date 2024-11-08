@@ -1,6 +1,4 @@
-﻿using System.Text.Json;
-using System.Text.Json.Serialization;
-using CSharpFunctionalExtensions;
+﻿using CSharpFunctionalExtensions;
 using Microsoft.EntityFrameworkCore;
 using PawsAndHearts.Accounts.Application.Interfaces;
 using PawsAndHearts.Accounts.Contracts.Dtos;
@@ -26,12 +24,6 @@ public class GetUserByIdHandler : IQueryHandlerWithResult<UserDto, GetUserByIdQu
 
         if (user is null)
             return Errors.General.NotFound(query.UserId, "user").ToErrorList();
-        
-        JsonSerializerOptions options = new()
-        {
-            ReferenceHandler = ReferenceHandler.IgnoreCycles,
-            WriteIndented = true
-        };
 
         return user;
     }

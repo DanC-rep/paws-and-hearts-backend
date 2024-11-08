@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using PawsAndHearts.SharedKernel.ValueObjects.Ids;
 using PawsAndHearts.VolunteerRequests.Domain.Entities;
 
 namespace PawsAndHearts.VolunteerRequests.Infrastructure.DbContexts;
@@ -8,6 +9,7 @@ namespace PawsAndHearts.VolunteerRequests.Infrastructure.DbContexts;
 public class WriteDbContext(IConfiguration configuration) : DbContext
 {
     public DbSet<VolunteerRequest> VolunteerRequests => Set<VolunteerRequest>();
+    public DbSet<UserRestriction> UserRestrictions => Set<UserRestriction>();
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {

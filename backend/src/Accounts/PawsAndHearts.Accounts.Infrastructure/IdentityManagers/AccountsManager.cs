@@ -20,6 +20,13 @@ public class AccountsManager(AccountsWriteDbContext accountsWriteDbContext) : IA
     {
         await accountsWriteDbContext.AdminAccounts.AddAsync(adminAccount, cancellationToken);
     }
+    
+    public async Task AddVolunteerAccount(
+        VolunteerAccount volunteerAccount, 
+        CancellationToken cancellationToken = default)
+    {
+        await accountsWriteDbContext.VolunteerAccounts.AddAsync(volunteerAccount, cancellationToken);
+    }
 
     public async Task<Result<VolunteerAccount, Error>> GetVolunteerAccountByUserId(
         Guid userId, CancellationToken cancellationToken = default)

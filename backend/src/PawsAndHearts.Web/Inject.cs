@@ -10,12 +10,15 @@ using PawsAndHearts.BreedManagement.Application;
 using PawsAndHearts.BreedManagement.Infrastructure;
 using PawsAndHearts.BreedManagement.Presentation;
 using PawsAndHearts.Core.Options;
+using PawsAndHearts.Discussions.Application;
 using PawsAndHearts.Discussions.Infrastructure;
+using PawsAndHearts.Discussions.Presentation;
 using PawsAndHearts.Framework.Authorization;
 using PawsAndHearts.Framework.BackgroundServices;
 using PawsAndHearts.PetManagement.Application;
 using PawsAndHearts.PetManagement.Infrastructure;
 using PawsAndHearts.PetManagement.Presentation;
+using PawsAndHearts.VolunteerRequests.Application;
 using PawsAndHearts.VolunteerRequests.Infrastructure;
 using Serilog;
 using Serilog.Events;
@@ -48,6 +51,7 @@ public static class Inject
 
         services.AddSingleton<IAuthorizationHandler, PermissionRequirementHandler>();
         services.AddSingleton<IAuthorizationPolicyProvider, PermissionPolicyProvider>();
+        services.AddScoped<ClaimsManager>();
 
         return services;
     }
@@ -122,7 +126,7 @@ public static class Inject
         services
             .AddAccountsInfrastructure(configuration)
             .AddAccountsApplication()
-            .AddAAccountsPresentation();
+            .AddAccountsPresentation();
 
         return services;
     }
@@ -156,6 +160,8 @@ public static class Inject
         IConfiguration configuration)
     {
         services.AddDiscussionsInfrastructure(configuration);
+        services.AddDiscussionsApplication();
+        services.AddDiscussionsPresentation();
 
         return services;
     }
@@ -165,6 +171,7 @@ public static class Inject
         IConfiguration configuration)
     {
         services.AddVolunteerRequestsInfrastructure(configuration);
+        services.AddVolunteerRequestsApplication();
 
         return services;
     }
