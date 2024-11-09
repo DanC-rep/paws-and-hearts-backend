@@ -24,6 +24,7 @@ public class VolunteerRequest : Entity<VolunteerRequestId>
         CreatedAt = createdAt;
         VolunteerInfo = volunteerInfo;
         Status = status;
+        RejectionComment = RejectionComment.Create("No comment").Value;
     }
 
     public static VolunteerRequest CreateRequest(
@@ -49,7 +50,7 @@ public class VolunteerRequest : Entity<VolunteerRequestId>
         return Result.Success<Error>();
     }
 
-    public UnitResult<Error> SendForRevision(string rejectionComment)
+    public UnitResult<Error> SendForRevision(RejectionComment rejectionComment)
     {
         if (Status != VolunteerRequestStatus.Submitted)
             return Errors.General.ValueIsInvalid("volunteer request status");
@@ -60,7 +61,7 @@ public class VolunteerRequest : Entity<VolunteerRequestId>
         return Result.Success<Error>();
     }
 
-    public UnitResult<Error> Reject(string rejectionComment)
+    public UnitResult<Error> Reject(RejectionComment rejectionComment)
     {
         if (Status != VolunteerRequestStatus.Submitted)
             return Errors.General.ValueIsInvalid("volunteer request status");
@@ -91,6 +92,16 @@ public class VolunteerRequest : Entity<VolunteerRequestId>
 
         return Result.Success<Error>();
     }
+
+    public UnitResult<Error> Update(VolunteerInfo volunteerInfo)
+    {
+        if (Status != VolunteerRequestStatus.Revision)
+            return Errors.General.ValueIsInvalid("volunteer request status");
+        
+        VolunteerInfo = volunteerInfo;
+
+        return Result.Success<Error>();
+    }
     
     public Guid UserId { get; private set; }
     
@@ -104,5 +115,5 @@ public class VolunteerRequest : Entity<VolunteerRequestId>
     
     public DateTime CreatedAt { get; private set; }
     
-    public string? RejectionComment { get; private set; }
+    public RejectionComment RejectionComment { get; private set; }
 }

@@ -1,0 +1,3 @@
+﻿namespace PawsAndHearts.VolunteerRequests.Contracts.Requests;
+
+public record SendVolunteerRequestForRevisionRequest(string RejectionComment);

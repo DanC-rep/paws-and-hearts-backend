@@ -1,4 +1,5 @@
 using System.Text;
+using FluentValidation;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.IdentityModel.Tokens;
@@ -9,13 +10,17 @@ using PawsAndHearts.Accounts.Presentation;
 using PawsAndHearts.BreedManagement.Application;
 using PawsAndHearts.BreedManagement.Infrastructure;
 using PawsAndHearts.BreedManagement.Presentation;
+using PawsAndHearts.Core.Abstractions;
 using PawsAndHearts.Core.Options;
+using PawsAndHearts.Discussions.Application;
 using PawsAndHearts.Discussions.Infrastructure;
+using PawsAndHearts.Discussions.Presentation;
 using PawsAndHearts.Framework.Authorization;
 using PawsAndHearts.Framework.BackgroundServices;
 using PawsAndHearts.PetManagement.Application;
 using PawsAndHearts.PetManagement.Infrastructure;
 using PawsAndHearts.PetManagement.Presentation;
+using PawsAndHearts.VolunteerRequests.Application;
 using PawsAndHearts.VolunteerRequests.Infrastructure;
 using Serilog;
 using Serilog.Events;
@@ -48,6 +53,7 @@ public static class Inject
 
         services.AddSingleton<IAuthorizationHandler, PermissionRequirementHandler>();
         services.AddSingleton<IAuthorizationPolicyProvider, PermissionPolicyProvider>();
+        services.AddScoped<ClaimsManager>();
 
         return services;
     }
@@ -121,8 +127,7 @@ public static class Inject
     {
         services
             .AddAccountsInfrastructure(configuration)
-            .AddAccountsApplication()
-            .AddAAccountsPresentation();
+            .AddAccountsPresentation();
 
         return services;
     }
@@ -133,7 +138,6 @@ public static class Inject
     {
         services
             .AddBreedManagementInfrastructure(configuration)
-            .AddBreedManagementApplication()
             .AddBreedManagementPresentation();
 
         return services;
@@ -145,7 +149,6 @@ public static class Inject
     {
         services
             .AddPetManagementInfrastructure(configuration)
-            .AddPetManagementApplication()
             .AddPetManagementPresentation();
 
         return services;
@@ -156,6 +159,7 @@ public static class Inject
         IConfiguration configuration)
     {
         services.AddDiscussionsInfrastructure(configuration);
+        services.AddDiscussionsPresentation();
 
         return services;
     }
@@ -166,6 +170,33 @@ public static class Inject
     {
         services.AddVolunteerRequestsInfrastructure(configuration);
 
+        return services;
+    }
+    
+    public static IServiceCollection AddApplicationLayers(this IServiceCollection services)
+    {
+        var assemblies = new[]
+        {
+            typeof(PawsAndHearts.Accounts.Application.Inject).Assembly,
+            typeof(PawsAndHearts.BreedManagement.Application.Inject).Assembly,
+            typeof(PawsAndHearts.Discussions.Application.Inject).Assembly,
+            typeof(PawsAndHearts.PetManagement.Application.Inject).Assembly,
+            typeof(PawsAndHearts.VolunteerRequests.Application.Inject).Assembly
+        };
+
+        services.Scan(scan => scan.FromAssemblies(assemblies)
+            .AddClasses(classes => classes
+                .AssignableToAny(typeof(ICommandHandler<,>), typeof(ICommandHandler<>)))
+            .AsSelfWithInterfaces()
+            .WithScopedLifetime());
+
+        services.Scan(scan => scan.FromAssemblies(assemblies)
+            .AddClasses(classes => classes
+                .AssignableToAny(typeof(IQueryHandler<,>), typeof(IQueryHandlerWithResult<,>)))
+            .AsSelfWithInterfaces()
+            .WithScopedLifetime());
+
+        services.AddValidatorsFromAssemblies(assemblies);
         return services;
     }
 }

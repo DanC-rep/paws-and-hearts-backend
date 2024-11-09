@@ -4,6 +4,18 @@ namespace PawsAndHearts.Accounts.Domain;
 
 public class VolunteerAccount
 {
+    private VolunteerAccount()
+    {
+        
+    }
+
+    public VolunteerAccount(User user, Experience experience, IEnumerable<Requisite> requisites)
+    {
+        User = user;
+        Experience = experience;
+        Requisites = requisites.ToList();
+    }
+    
     public Guid Id { get; set; }
     
     public Experience Experience { get; set; }

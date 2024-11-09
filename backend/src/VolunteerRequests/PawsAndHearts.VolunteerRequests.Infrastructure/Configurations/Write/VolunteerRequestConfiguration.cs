@@ -32,44 +32,18 @@ public class VolunteerRequestConfiguration : IEntityTypeConfiguration<VolunteerR
 
         builder.OwnsOne(v => v.VolunteerInfo, vi =>
         {
-            vi.OwnsOne(i => i.FullName, fb =>
-            {
-                fb.Property(f => f.Name)
-                    .IsRequired()
-                    .HasMaxLength(SharedKernel.Constants.MAX_NAME_LENGTH)
-                    .HasColumnName("name");
-
-                fb.Property(f => f.Surname)
-                    .IsRequired()
-                    .HasMaxLength(SharedKernel.Constants.MAX_NAME_LENGTH)
-                    .HasColumnName("surname");
-
-                fb.Property(f => f.Patronymic)
-                    .IsRequired(false)
-                    .HasMaxLength(SharedKernel.Constants.MAX_NAME_LENGTH)
-                    .HasColumnName("patronymic");
-            });
-
             vi.OwnsOne(i => i.Experience, eb =>
             {
                 eb.Property(e => e.Value)
                     .IsRequired()
                     .HasColumnName("experience");
             });
-
-            vi.OwnsOne(i => i.PhoneNumber, pb =>
-            {
-                pb.Property(p => p.Value)
-                    .IsRequired()
-                    .HasMaxLength(SharedKernel.Constants.MAX_PHONE_LENGTH)
-                    .HasColumnName("phone_number");
-            });
             
-            vi.Property(i => i.SocialNetworks)
+            vi.Property(i => i.Requisites)
                 .HasValueObjectsJsonConversion(
-                    socialNetwork => new SocialNetworkDto(socialNetwork.Name, socialNetwork.Link),
-                    dto => SocialNetwork.Create(dto.Link, dto.Name).Value)
-                .HasColumnName("social_networks");
+                    requisite => new RequisiteDto(requisite.Name, requisite.Description),
+                    dto => Requisite.Create(dto.Name, dto.Description).Value)
+                .HasColumnName("requisites");
         });
         
         builder.Property(v => v.Status)
@@ -78,10 +52,13 @@ public class VolunteerRequestConfiguration : IEntityTypeConfiguration<VolunteerR
 
         builder.Property(v => v.CreatedAt)
             .HasColumnName("created_at");
-        
-        builder.Property(v => v.RejectionComment)
-            .IsRequired(false)
-            .HasMaxLength(SharedKernel.Constants.MAX_TEXT_LENGTH)
-            .HasColumnName("rejection_comment");
+
+        builder.ComplexProperty(v => v.RejectionComment, rb =>
+        {
+            rb.Property(c => c.Value)
+                .IsRequired()
+                .HasMaxLength(SharedKernel.Constants.MAX_DESCRIPTION_LENGTH)
+                .HasColumnName("rejection_comment");
+        });
     }
 }

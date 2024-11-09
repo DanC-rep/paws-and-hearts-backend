@@ -26,6 +26,8 @@ public static class Inject
         services.AddKeyedScoped<IUnitOfWork, UnitOfWork>(Modules.VolunteerRequests);
 
         services.AddScoped<WriteDbContext>();
+
+        services.AddScoped<IVolunteerRequestsReadDbContext, ReadDbContext>();
         
         return services;
     }
@@ -33,6 +35,8 @@ public static class Inject
     private static IServiceCollection AddRepositories(this IServiceCollection services)
     {
         services.AddScoped<IVolunteerRequestsRepository, VolunteerRequestsRepository>();
+
+        services.AddScoped<IUserRestrictionRepository, UserRestrictionRepository>();
         
         return services;
     }

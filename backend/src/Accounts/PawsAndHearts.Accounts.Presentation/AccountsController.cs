@@ -63,23 +63,15 @@ public class AccountsController : ApplicationController
     public async Task<ActionResult> UpdateUserSocialNetworks(
         [FromBody] UpdateUserSocialNetworksRequest request,
         [FromServices] UpdateUserSocialNetworksHandler handler,
+        [FromServices] ClaimsManager claimsManager,
         CancellationToken cancellationToken = default)
     {
-        var userIdString = HttpContext.User.Claims.FirstOrDefault(u => u.Type == CustomClaims.Id)?.Value;
+        var userIdResult = claimsManager.GetCurrentUserId(HttpContext);
 
-        if (userIdString is null)
-        {
-            var error = Errors.General.NotFound(null, "user id").ToErrorList();
-            return UnitResult.Failure(error).ToResponse();
-        }
-
-        if (!Guid.TryParse(userIdString, out var userId))
-        {
-            var error = Error.Failure("parse.error", "can not convert user id to guid").ToErrorList();
-            return UnitResult.Failure(error).ToResponse();
-        }
+        if (userIdResult.IsFailure)
+            return UnitResult.Failure(userIdResult.Error).ToResponse();
         
-        var command = UpdateUserSocialNetworksCommand.Create(request, userId);
+        var command = UpdateUserSocialNetworksCommand.Create(request, userIdResult.Value);
         
         var result = await handler.Handle(command, cancellationToken);
 
@@ -91,23 +83,15 @@ public class AccountsController : ApplicationController
     public async Task<ActionResult> UpdateVolunteerRequisites(
         [FromBody] UpdateVolunteerRequisitesRequest request,
         [FromServices] UpdateVolunteerRequisitesHandler handler,
+        [FromServices] ClaimsManager claimsManager,
         CancellationToken cancellationToken = default)
     {
-        var userIdString = HttpContext.User.Claims.FirstOrDefault(u => u.Type == CustomClaims.Id)?.Value;
+        var userIdResult = claimsManager.GetCurrentUserId(HttpContext);
 
-        if (userIdString is null)
-        {
-            var error = Errors.General.NotFound(null, "user id").ToErrorList();
-            return UnitResult.Failure(error).ToResponse();
-        }
+        if (userIdResult.IsFailure)
+            return UnitResult.Failure(userIdResult.Error).ToResponse();
 
-        if (!Guid.TryParse(userIdString, out var userId))
-        {
-            var error = Error.Failure("parse.error", "can not convert user id to guid").ToErrorList();
-            return UnitResult.Failure(error).ToResponse();
-        }
-
-        var command = UpdateVolunteerRequisitesCommand.Create(request, userId);
+        var command = UpdateVolunteerRequisitesCommand.Create(request, userIdResult.Value);
         
         var result = await handler.Handle(command, cancellationToken);
 

@@ -1,7 +1,6 @@
-using System.Data;
+using System.Data.Common;
 using Microsoft.EntityFrameworkCore.Storage;
 using PawsAndHearts.Core.Abstractions;
-using PawsAndHearts.PetManagement.Application.Interfaces;
 using PawsAndHearts.PetManagement.Infrastructure.DbContexts;
 
 namespace PawsAndHearts.PetManagement.Infrastructure;
@@ -15,7 +14,7 @@ public class UnitOfWork : IUnitOfWork
         _dbContext = dbContext;
     }
 
-    public async Task<IDbTransaction> BeginTransaction(CancellationToken cancellationToken = default)
+    public async Task<DbTransaction> BeginTransaction(CancellationToken cancellationToken = default)
     {
         var transaction = await _dbContext.Database.BeginTransactionAsync(cancellationToken);
 

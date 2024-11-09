@@ -69,7 +69,7 @@ public class DeletePetForceHandler : ICommandHandler<Guid, DeletePetForceCommand
                 return deleteResult.Error.ToErrorList();
             }
             
-            transaction.Commit();
+            await transaction.CommitAsync(cancellationToken);
 
             _logger.LogInformation("Pet was force deleted with id {petId}", command.PetId);
 
@@ -79,7 +79,7 @@ public class DeletePetForceHandler : ICommandHandler<Guid, DeletePetForceCommand
         {
             _logger.LogError(ex, "Fail to delete pet with id {petId}", command.PetId);
             
-            transaction.Rollback();
+            await transaction.RollbackAsync(cancellationToken);
 
             return Error.Failure("pet.delete", "Can not delete pet")
                 .ToErrorList();

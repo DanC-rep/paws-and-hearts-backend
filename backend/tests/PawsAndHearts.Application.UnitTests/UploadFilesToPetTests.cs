@@ -1,4 +1,4 @@
-using System.Data;
+using System.Data.Common;
 using CSharpFunctionalExtensions;
 using FluentAssertions;
 using FluentValidation;
@@ -59,7 +59,7 @@ public class UploadFilesToPetTests
              v.GetById(volunteer.Id, cancellationToken))
             .ReturnsAsync(volunteer);
         
-        var dbTransactionMock = new Mock<IDbTransaction>();
+        var dbTransactionMock = new Mock<DbTransaction>();
         
         _unitOfWorkMock.Setup(u => 
              u.SaveChanges(cancellationToken))
@@ -201,7 +201,7 @@ public class UploadFilesToPetTests
                 v.GetById(volunteer.Id, cancellationToken))
             .ReturnsAsync(volunteer);
         
-        var dbTransactionMock = new Mock<IDbTransaction>();
+        var dbTransactionMock = new Mock<DbTransaction>();
         
         _unitOfWorkMock.Setup(u => 
                 u.SaveChanges(cancellationToken))

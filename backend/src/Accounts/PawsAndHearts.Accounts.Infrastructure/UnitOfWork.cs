@@ -1,4 +1,4 @@
-﻿using System.Data;
+﻿using System.Data.Common;
 using Microsoft.EntityFrameworkCore.Storage;
 using PawsAndHearts.Accounts.Infrastructure.DbContexts;
 using PawsAndHearts.Core.Abstractions;
@@ -14,7 +14,7 @@ public class UnitOfWork : IUnitOfWork
         _writeDbContext = writeDbContext;
     }
 
-    public async Task<IDbTransaction> BeginTransaction(CancellationToken cancellationToken = default)
+    public async Task<DbTransaction> BeginTransaction(CancellationToken cancellationToken = default)
     {
         var transaction = await _writeDbContext.Database.BeginTransactionAsync(cancellationToken);
 

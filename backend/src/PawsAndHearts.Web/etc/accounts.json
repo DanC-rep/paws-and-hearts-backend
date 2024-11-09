@@ -18,7 +18,9 @@
       "breed.delete",
       "breed.read",
       "volunteer.account.update",
-      "user.update"
+      "user.update",
+      "volunteer.request.review",
+      "volunteer.request.read"
     ],
     "Volunteer": [
       "volunteer.create",
@@ -34,7 +36,10 @@
     "Participant": [
       "volunteer.read",
       "pet.read",
-      "user.update"
+      "user.update",
+      "volunteer.request.create",
+      "volunteer.request.update",
+      "volunteer.request.read.own"
     ]
   },
   "Permissions": {
@@ -61,6 +66,13 @@
     "Accounts": [
       "user.update",
       "volunteer.account.update"
+    ],
+    "VolunteerRequests": [
+      "volunteer.request.create",
+      "volunteer.request.review",
+      "volunteer.request.update",
+      "volunteer.request.read",
+      "volunteer.request.read.own"
     ]
   }
 }
