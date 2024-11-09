@@ -42,7 +42,7 @@ public class VolunteerRequestsController : ApplicationController
     }
 
     [Permission("volunteer.request.review")]
-    [HttpPost("{volunteerRequestId:guid}/taking-request-for-submitting")]
+    [HttpPost("{volunteerRequestId:guid}/taking-for-submitting")]
     public async Task<ActionResult> TakeVolunteerRequestForSubmit(
         [FromRoute] Guid volunteerRequestId,
         [FromServices] TakeRequestForSubmitHandler handler,
@@ -85,7 +85,7 @@ public class VolunteerRequestsController : ApplicationController
 
 
     [Permission("volunteer.request.review")]
-    [HttpPost("{volunteerRequestId:guid}/approving-volunteer-request")]
+    [HttpPost("{volunteerRequestId:guid}/approving")]
     public async Task<ActionResult> ApproveVolunteerRequest(
         [FromRoute] Guid volunteerRequestId,
         [FromServices] ApproveVolunteerRequestHandler handler,
@@ -105,7 +105,7 @@ public class VolunteerRequestsController : ApplicationController
     }
     
     [Permission("volunteer.request.review")]
-    [HttpPost("{volunteerRequestId:guid}/rejecting-volunteer-request")]
+    [HttpPost("{volunteerRequestId:guid}/rejecting")]
     public async Task<ActionResult> RejectVolunteerRequest(
         [FromRoute] Guid volunteerRequestId,
         [FromBody] RejectVolunteerRequestRequest request,
@@ -149,7 +149,7 @@ public class VolunteerRequestsController : ApplicationController
     }
 
     [Permission("volunteer.request.update")]
-    [HttpPost("{volunteerRequestId:guid}/resending-volunteer-request")]
+    [HttpPost("{volunteerRequestId:guid}/resending")]
     public async Task<ActionResult> ResendVolunteerRequest(
         Guid volunteerRequestId,
         [FromServices] ResendVolunteerRequestHandler handler,

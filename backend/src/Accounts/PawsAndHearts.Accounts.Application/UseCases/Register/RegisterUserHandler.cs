@@ -60,7 +60,7 @@ public class RegisterUserHandler : ICommandHandler<RegisterUserCommand>
                 return Errors.General.NotFound(null, "role").ToErrorList();
             
             var socialNetworks = command.SocialNetworks.Select(s =>
-                SocialNetwork.Create(s.Name, s.Link).Value).ToList();
+                SocialNetwork.Create(s.Link, s.Name).Value).ToList();
             
             var fullName = FullName.Create(
                 command.FullName.Name,
@@ -88,7 +88,7 @@ public class RegisterUserHandler : ICommandHandler<RegisterUserCommand>
 
             await _unitOfWork.SaveChanges(cancellationToken);
             
-            transaction.Commit();
+            await transaction.CommitAsync(cancellationToken);
             
             _logger.LogInformation("User was created with name {userName}", command.UserName);
 
@@ -98,7 +98,7 @@ public class RegisterUserHandler : ICommandHandler<RegisterUserCommand>
         {
             _logger.LogError("User registration was failed");
             
-            transaction.Rollback();
+            await transaction.RollbackAsync(cancellationToken);
 
             return Error.Failure("register.user", "Can not register user").ToErrorList();
         }

@@ -99,7 +99,7 @@ public class AddPhotosToPetHandler : ICommandHandler<FilePathList, AddPhotosToPe
                 return uploadResult.Error.ToErrorList();
             }
 
-            transaction.Commit();
+            await transaction.CommitAsync(cancellationToken);
 
             _logger.LogInformation("Files was uploaded for pet {petId}", command.PetId);
 
@@ -109,7 +109,7 @@ public class AddPhotosToPetHandler : ICommandHandler<FilePathList, AddPhotosToPe
         {
             _logger.LogError(ex, "Fail to upload files for pet {petId}", command.PetId);
             
-            transaction.Rollback();
+            await transaction.RollbackAsync(cancellationToken);
 
             return Error.Failure("pet.upload.files", "Can not upload files for pet")
                 .ToErrorList();

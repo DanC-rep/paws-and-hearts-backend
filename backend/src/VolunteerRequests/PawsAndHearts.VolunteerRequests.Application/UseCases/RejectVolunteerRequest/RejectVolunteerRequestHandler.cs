@@ -78,7 +78,7 @@ public class RejectVolunteerRequestHandler : ICommandHandler<RejectVolunteerRequ
 
             await _unitOfWork.SaveChanges(cancellationToken);
 
-            transaction.Commit();
+            await transaction.CommitAsync(cancellationToken);
             
             _logger.LogInformation("Volunteer request {requestId} was rejected", command.VolunteerRequestId);
 
@@ -86,7 +86,7 @@ public class RejectVolunteerRequestHandler : ICommandHandler<RejectVolunteerRequ
         }
         catch (Exception ex)
         {
-            transaction.Rollback();
+            await transaction.RollbackAsync(cancellationToken);
             
             _logger.LogError("Can not reject volunteer request {requestId}", command.VolunteerRequestId);
             

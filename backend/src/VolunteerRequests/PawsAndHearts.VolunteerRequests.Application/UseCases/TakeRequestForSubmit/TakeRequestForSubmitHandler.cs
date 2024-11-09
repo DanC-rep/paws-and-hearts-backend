@@ -59,7 +59,7 @@ public class TakeRequestForSubmitHandler : ICommandHandler<TakeRequestForSubmitC
 
             await _unitOfWork.SaveChanges(cancellationToken);
             
-            transaction.Commit();
+            await transaction.CommitAsync(cancellationToken);
             
             _logger.LogInformation("Volunteer request {requestId} was taken for submit by admin {adminId}",
                 command.VolunteerRequestId, command.AdminId);
@@ -68,7 +68,7 @@ public class TakeRequestForSubmitHandler : ICommandHandler<TakeRequestForSubmitC
         }
         catch (Exception ex)
         {
-            transaction.Rollback();
+            await transaction.RollbackAsync(cancellationToken);
             
             _logger.LogError("Can not take request for submit with id {requestId}", command.VolunteerRequestId);
 

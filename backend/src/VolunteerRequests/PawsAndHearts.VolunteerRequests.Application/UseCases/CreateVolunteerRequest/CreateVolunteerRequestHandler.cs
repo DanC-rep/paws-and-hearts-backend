@@ -83,7 +83,7 @@ public class CreateVolunteerRequestHandler : ICommandHandler<Guid, CreateVolunte
 
             await _unitOfWork.SaveChanges(cancellationToken);
             
-            transaction.Commit();
+            await transaction.CommitAsync(cancellationToken);
         
             _logger.LogInformation("User {userId} created volunteer request with id {volunteerRequestId}",
                 command.UserId, volunteerRequestId.Value);
@@ -92,7 +92,7 @@ public class CreateVolunteerRequestHandler : ICommandHandler<Guid, CreateVolunte
         }
         catch (Exception ex)
         {
-            transaction.Rollback();
+            await transaction.RollbackAsync(cancellationToken);
             
             _logger.LogError("Can not create volunteer request handler");
             

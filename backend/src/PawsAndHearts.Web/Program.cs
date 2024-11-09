@@ -25,6 +25,8 @@ public class Program
             .AddDiscussionsModule(builder.Configuration)
             .AddVolunteerRequestsModule(builder.Configuration);
 
+        builder.Services.AddApplicationLayers();
+
         builder.Services.AddAuthServices(builder.Configuration);
 
         var app = builder.Build();

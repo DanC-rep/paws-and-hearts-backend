@@ -68,7 +68,7 @@ public class DeletePetPhotosHandler : ICommandHandler<DeletePetPhotosCommand>
                 return deleteResult.Error.ToErrorList();
             }
             
-            transaction.Commit();
+            await transaction.CommitAsync(cancellationToken);
 
             _logger.LogInformation("Files was deleted for pet {petId}", command.PetId);
 
@@ -78,7 +78,7 @@ public class DeletePetPhotosHandler : ICommandHandler<DeletePetPhotosCommand>
         {
             _logger.LogError(ex, "Fail to delete files for pet {petId}", command.PetId);
             
-            transaction.Rollback();
+            await transaction.RollbackAsync(cancellationToken);
 
             return Error.Failure("pet.delete.files", "Can not delete files for pet")
                 .ToErrorList();

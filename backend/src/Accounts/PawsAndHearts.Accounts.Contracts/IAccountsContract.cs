@@ -13,7 +13,7 @@ public interface IAccountsContract
     
     Task<Result<UserDto, ErrorList>> GetUserById(Guid userId, CancellationToken cancellationToken = default);
 
-    Task<UnitResult<Error>> CreateVolunteerAccount(
+    Task<UnitResult<ErrorList>> CreateVolunteerAccount(
         Guid userId, 
         Experience experience, 
         IEnumerable<Requisite> requisites, 

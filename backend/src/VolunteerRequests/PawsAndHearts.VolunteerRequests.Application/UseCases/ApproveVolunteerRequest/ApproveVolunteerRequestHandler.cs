@@ -50,7 +50,7 @@ public class ApproveVolunteerRequestHandler : ICommandHandler<ApproveVolunteerRe
                     cancellationToken);
 
             if (volunteerAccountResult.IsFailure)
-                return volunteerAccountResult.Error.ToErrorList();
+                return volunteerAccountResult.Error;
 
             var result = volunteerRequestResult.Value.Approve();
 
@@ -59,7 +59,7 @@ public class ApproveVolunteerRequestHandler : ICommandHandler<ApproveVolunteerRe
 
             await _unitOfWork.SaveChanges(cancellationToken);
             
-            transaction.Commit();
+            await transaction.CommitAsync(cancellationToken);
             
             _logger.LogInformation("Volunteer request {requestId} was approved successfully", 
                 command.VolunteerRequestId);
@@ -68,7 +68,7 @@ public class ApproveVolunteerRequestHandler : ICommandHandler<ApproveVolunteerRe
         }
         catch (Exception ex)
         {
-            transaction.Rollback();
+            await transaction.RollbackAsync(cancellationToken);
             
             _logger.LogError("Can not approve volunteer request with id {requestId}", command.VolunteerRequestId);
             

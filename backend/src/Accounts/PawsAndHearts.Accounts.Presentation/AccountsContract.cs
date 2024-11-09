@@ -1,15 +1,10 @@
 ﻿using CSharpFunctionalExtensions;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
-using PawsAndHearts.Accounts.Application.Interfaces;
 using PawsAndHearts.Accounts.Application.Queries.GetPermissionsByUserId;
 using PawsAndHearts.Accounts.Application.Queries.GetUserById;
+using PawsAndHearts.Accounts.Application.UseCases.CreateVolunteerAccount;
 using PawsAndHearts.Accounts.Contracts;
 using PawsAndHearts.Accounts.Contracts.Dtos;
-using PawsAndHearts.Accounts.Domain;
-using PawsAndHearts.Core.Abstractions;
-using PawsAndHearts.Core.Enums;
+using PawsAndHearts.Core.Dtos;
 using PawsAndHearts.SharedKernel;
 using PawsAndHearts.SharedKernel.ValueObjects;
 
@@ -19,22 +14,16 @@ public class AccountsContract : IAccountsContract
 {
     private readonly GetPermissionsByUserIdHandler _getPermissionsByUserIdHandler;
     private readonly GetUserByIdHandler _getUserByIdHandler;
-    private readonly UserManager<User> _userManager;
-    private readonly IAccountManager _accountManager;
-    private readonly IUnitOfWork _unitOfWork;
+    private readonly CreateVolunteerAccountHandler _createVolunteerAccountHandler;
 
     public AccountsContract(
         GetPermissionsByUserIdHandler getPermissionsByUserIdHandler,
         GetUserByIdHandler getUserByIdHandler,
-        UserManager<User> userManager,
-        IAccountManager accountManager,
-        [FromKeyedServices(Modules.Accounts)] IUnitOfWork unitOfWork)
+        CreateVolunteerAccountHandler createVolunteerAccountHandler)
     {
         _getPermissionsByUserIdHandler = getPermissionsByUserIdHandler;
         _getUserByIdHandler = getUserByIdHandler;
-        _userManager = userManager;
-        _accountManager = accountManager;
-        _unitOfWork = unitOfWork;
+        _createVolunteerAccountHandler = createVolunteerAccountHandler;
     }
 
 
@@ -55,23 +44,22 @@ public class AccountsContract : IAccountsContract
         return await _getUserByIdHandler.Handle(query, cancellationToken);
     }
 
-    public async Task<UnitResult<Error>> CreateVolunteerAccount(
+    public async Task<UnitResult<ErrorList>> CreateVolunteerAccount(
         Guid userId, 
         Experience experience, 
         IEnumerable<Requisite> requisites,
         CancellationToken cancellationToken = default)
     {
-        var user = await _userManager.Users.FirstOrDefaultAsync(u => u.Id == userId, cancellationToken);
+       var requisitesDtos = requisites.Select(r =>
+           new RequisiteDto(r.Name, r.Description)).ToList();
+       
+       var command = new CreateVolunteerAccountCommand(userId, experience.Value, requisitesDtos);
 
-        if (user is null)
-            return Errors.General.NotFound(userId);
+       var result = await _createVolunteerAccountHandler.Handle(command, cancellationToken);
 
-        var volunteerAccount = new VolunteerAccount(user, experience, requisites);
+       if (result.IsFailure)
+           return result.Error;
 
-        await _accountManager.AddVolunteerAccount(volunteerAccount, cancellationToken);
-
-        await _unitOfWork.SaveChanges(cancellationToken);
-
-        return Result.Success<Error>();
+       return Result.Success<ErrorList>();
     }
 }

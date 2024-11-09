@@ -14,6 +14,6 @@ public class RegisterUserValidator : AbstractValidator<RegisterUserCommand>
         
         RuleForEach(c => c.SocialNetworks)
             .MustBeValueObject(f => 
-                SocialNetwork.Create(f.Name, f.Link));
+                SocialNetwork.Create(f.Link, f.Name));
     }
 }
