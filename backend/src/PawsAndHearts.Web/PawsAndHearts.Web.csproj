@@ -22,12 +22,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Content Include="..\..\.dockerignore">
-      <Link>.dockerignore</Link>
-    </Content>
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\Accounts\PawsAndHearts.Accounts.Infrastructure\PawsAndHearts.Accounts.Infrastructure.csproj" />
     <ProjectReference Include="..\Accounts\PawsAndHearts.Accounts.Presentation\PawsAndHearts.Accounts.Presentation.csproj" />
     <ProjectReference Include="..\BreedManagement\PawsAndHearts.BreedManagement.Application\PawsAndHearts.BreedManagement.Application.csproj" />
@@ -42,6 +36,12 @@
     <ProjectReference Include="..\Shared\PawsAndHearts.SharedKernel\PawsAndHearts.SharedKernel.csproj" />
     <ProjectReference Include="..\VolunteerRequests\PawsAndHearts.VolunteerRequests.Infrastructure\PawsAndHearts.VolunteerRequests.Infrastructure.csproj" />
     <ProjectReference Include="..\VolunteerRequests\PawsAndHearts.VolunteerRequests.Presentation\PawsAndHearts.VolunteerRequests.Presentation.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="..\..\.dockerignore">
+      <Link>.dockerignore</Link>
+    </Content>
   </ItemGroup>
 
 </Project>
