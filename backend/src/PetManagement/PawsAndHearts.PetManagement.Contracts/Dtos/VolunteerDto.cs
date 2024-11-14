@@ -1,5 +1,3 @@
-using PawsAndHearts.Core.Dtos;
-
 namespace PawsAndHearts.PetManagement.Contracts.Dtos;
 
 public class VolunteerDto

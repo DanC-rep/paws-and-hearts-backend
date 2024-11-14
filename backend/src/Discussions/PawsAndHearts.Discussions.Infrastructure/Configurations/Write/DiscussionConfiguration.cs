@@ -26,9 +26,9 @@ public class DiscussionConfiguration : IEntityTypeConfiguration<Discussion>
             du.IsRequired();
             
             du.Property(u => u.FirstMember)
-                .HasColumnName("firs_member");
+                .HasColumnName("first_member");
 
-            du.Property(u => u.SecondMemeber)
+            du.Property(u => u.SecondMember)
                 .HasColumnName("second_member");
         });
         

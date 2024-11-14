@@ -27,8 +27,8 @@ public class DiscussionTests
         // arrange
         var discussion = CreateDiscussion();
         var messageId = MessageId.NewId();
-        var text = "comment text";
-        var message = new Message(messageId, discussion.Users.FirstMember, text, false, DateTime.UtcNow);
+        var text = MessageText.Create("comment text").Value;
+        var message = new Message(messageId, discussion.Users.FirstMember, text, DateTime.UtcNow);
 
         // act
         var result = discussion.SendComment(message);
@@ -44,8 +44,8 @@ public class DiscussionTests
         // arrange
         var discussion = CreateDiscussion();
         var messageId = MessageId.NewId();
-        var text = "comment text";
-        var message = new Message(messageId, Guid.NewGuid(), text, false, DateTime.UtcNow);
+        var text = MessageText.Create("comment text").Value;
+        var message = new Message(messageId, Guid.NewGuid(), text, DateTime.UtcNow);
 
         // act
         var result = discussion.SendComment(message);
@@ -61,9 +61,10 @@ public class DiscussionTests
         var discussion = CreateDiscussionWithMessage();
         var messageId = discussion.Messages.First().Id;
         var userId = discussion.Messages.First().UserId;
+        var comment = MessageText.Create("comment text edited").Value; 
 
         // act
-        var result = discussion.EditComment(userId, messageId, "comment text edited");
+        var result = discussion.EditComment(userId, messageId, comment);
         
         // assert
         result.IsSuccess.Should().BeTrue();
@@ -75,9 +76,10 @@ public class DiscussionTests
         // arrange
         var discussion = CreateDiscussionWithMessage();
         var messageId = discussion.Messages.First().Id;
+        var comment = MessageText.Create("comment text edited").Value; 
 
         // act
-        var result = discussion.EditComment(Guid.NewGuid(), messageId, "comment text edited");
+        var result = discussion.EditComment(Guid.NewGuid(), messageId, comment);
         
         // assert
         result.IsSuccess.Should().BeFalse();
@@ -126,9 +128,9 @@ public class DiscussionTests
     {
         var discussion = CreateDiscussion();
         var messageId = MessageId.NewId();
-        var text = "comment text";
+        var text = MessageText.Create("comment text").Value; 
 
-        var message = new Message(messageId, discussion.Users.FirstMember, text, false, DateTime.UtcNow);
+        var message = new Message(messageId, discussion.Users.FirstMember, text, DateTime.UtcNow);
 
         discussion.SendComment(message);
 

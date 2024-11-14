@@ -24,8 +24,14 @@ public class MessageConfiguration : IEntityTypeConfiguration<Message>
         builder.Property(m => m.CreatedAt)
             .HasColumnName("created_at");
 
-        builder.Property(m => m.Text)
-            .HasMaxLength(SharedKernel.Constants.MAX_TEXT_LENGTH);
+        builder.ComplexProperty(m => m.Text, mt =>
+        {
+            mt.IsRequired();
+
+            mt.Property(t => t.Value)
+                .HasMaxLength(SharedKernel.Constants.MAX_TEXT_LENGTH)
+                .HasColumnName("text");
+        });
 
         builder.Property(m => m.IsEdited)
             .HasColumnName("is_edited");

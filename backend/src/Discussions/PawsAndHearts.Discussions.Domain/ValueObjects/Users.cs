@@ -6,7 +6,7 @@ public class Users : ValueObject
 {
     public Guid FirstMember { get; }
     
-    public Guid SecondMemeber { get; }
+    public Guid SecondMember { get; }
 
     private Users()
     {
@@ -15,13 +15,13 @@ public class Users : ValueObject
     public Users(Guid firstMember, Guid secondMember)
     {
         FirstMember = firstMember;
-        SecondMemeber = secondMember;
+        SecondMember = secondMember;
     }
 
 
     protected override IEnumerable<IComparable> GetEqualityComponents()
     {
         yield return FirstMember;
-        yield return SecondMemeber;
+        yield return SecondMember;
     }
 }
