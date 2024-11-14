@@ -148,7 +148,7 @@ public class AccountsSeederService
             
             await _unitOfWork.SaveChanges(cancellationToken);
             
-            transaction.Commit();
+            await transaction.CommitAsync(cancellationToken);
             
             _logger.LogInformation("Admin account added to database");
             
@@ -157,7 +157,7 @@ public class AccountsSeederService
         {
             _logger.LogError("Creating admin was failed");
             
-            transaction.Rollback();
+            await transaction.RollbackAsync(cancellationToken);
 
             throw new ApplicationException(ex.Message);
         }
