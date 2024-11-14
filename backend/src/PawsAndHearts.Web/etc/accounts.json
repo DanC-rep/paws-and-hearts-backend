@@ -20,7 +20,12 @@
       "volunteer.account.update",
       "user.update",
       "volunteer.request.review",
-      "volunteer.request.read"
+      "volunteer.request.read",      
+      "discussion.send.message",
+      "discussion.update.message",
+      "discussion.delete.message",
+      "discussion.close",
+      "discussion.read"
     ],
     "Volunteer": [
       "volunteer.create",
@@ -39,7 +44,10 @@
       "user.update",
       "volunteer.request.create",
       "volunteer.request.update",
-      "volunteer.request.read.own"
+      "volunteer.request.read.own",
+      "discussion.send.message",
+      "discussion.update.message",
+      "discussion.delete.message"
     ]
   },
   "Permissions": {
@@ -73,6 +81,13 @@
       "volunteer.request.update",
       "volunteer.request.read",
       "volunteer.request.read.own"
+    ],
+    "Discussions": [
+      "discussion.close",
+      "discussion.send.message",
+      "discussion.update.message",
+      "discussion.delete.message",
+      "discussion.read"
     ]
   }
 }

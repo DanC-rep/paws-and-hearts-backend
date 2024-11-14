@@ -26,6 +26,8 @@ public static class Inject
 
         services.AddScoped<WriteDbContext>();
 
+        services.AddScoped<IDiscussionsReadDbContext, ReadDbContext>();
+
         return services;
     }
 

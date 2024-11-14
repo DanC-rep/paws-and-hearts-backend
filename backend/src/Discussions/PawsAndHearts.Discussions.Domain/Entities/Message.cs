@@ -1,4 +1,5 @@
 ﻿using CSharpFunctionalExtensions;
+using PawsAndHearts.Discussions.Domain.ValueObjects;
 using PawsAndHearts.SharedKernel.ValueObjects.Ids;
 
 namespace PawsAndHearts.Discussions.Domain.Entities;
@@ -9,7 +10,7 @@ public class Message : Entity<MessageId>
     
     public DateTime CreatedAt { get; private set; }
 
-    public string Text { get; private set; } = default!;
+    public MessageText Text { get; private set; } = default!;
     
     public bool IsEdited { get; private set; }
 
@@ -19,15 +20,15 @@ public class Message : Entity<MessageId>
     {
     }
 
-    public Message(MessageId id, Guid userId, string text, bool isEdited, DateTime createdAt) : base(id)
+    public Message(MessageId id, Guid userId, MessageText text, DateTime createdAt) : base(id)
     {
         UserId = userId;
         Text = text;
-        IsEdited = isEdited;
+        IsEdited = false;
         CreatedAt = createdAt;
     }
 
-    internal void Edit(string text)
+    internal void Edit(MessageText text)
     {
         Text = text;
         IsEdited = true;

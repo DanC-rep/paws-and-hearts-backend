@@ -31,8 +31,11 @@ public class Discussion : Entity<DiscussionId>
 
     public UnitResult<Error> SendComment(Message message)
     {
-        if (message.UserId != Users.FirstMember && message.UserId != Users.SecondMemeber)
+        if (message.UserId != Users.FirstMember && message.UserId != Users.SecondMember)
             return Error.Failure("access.denied", "Send comment can user that take part in discussion");
+        
+        if (Status == DiscussionStatus.Closed)
+            Errors.General.ValueIsInvalid("discussion status");
         
         _messages.Add(message);
 
@@ -48,13 +51,16 @@ public class Discussion : Entity<DiscussionId>
 
         if (messageResult.Value.UserId != userId)
             return Error.Failure("access.denied", "Delete comment can user that send this message");
+        
+        if (Status == DiscussionStatus.Closed)
+            Errors.General.ValueIsInvalid("discussion status");
 
         _messages.Remove(messageResult.Value);
 
         return Result.Success<Error>();
     }
 
-    public UnitResult<Error> EditComment(Guid userId, MessageId messageId, string text)
+    public UnitResult<Error> EditComment(Guid userId, MessageId messageId, MessageText text)
     {
         var messageResult = GetMessageById(messageId);
 
@@ -63,6 +69,9 @@ public class Discussion : Entity<DiscussionId>
         
         if (messageResult.Value.UserId != userId)
             return Error.Failure("access.denied", "Edit comment can user that send this message");
+        
+        if (Status == DiscussionStatus.Closed)
+            Errors.General.ValueIsInvalid("discussion status");
         
         messageResult.Value.Edit(text);
         
