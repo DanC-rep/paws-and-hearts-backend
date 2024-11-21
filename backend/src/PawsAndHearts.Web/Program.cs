@@ -47,6 +47,14 @@ public class Program
 
         app.UseHttpsRedirection();
 
+        app.UseCors(config =>
+        {
+            config.WithOrigins("http://localhost:5173")
+                .AllowAnyHeader()
+                .AllowAnyMethod()
+                .AllowCredentials();
+        });
+
         app.UseAuthentication();
         app.UseAuthorization();
             
