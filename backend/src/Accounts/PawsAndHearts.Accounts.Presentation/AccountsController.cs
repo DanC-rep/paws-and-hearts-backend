@@ -41,19 +41,29 @@ public class AccountsController : ApplicationController
         var command = LoginUserCommand.Create(request);
         
         var result = await handler.Handle(command, cancellationToken);
+        
+        if (result.IsSuccess)
+            CookieManager.AddRefreshTokenToCookies(HttpContext, result.Value.RefreshToken);
 
         return result.ToResponse();
     }
     
     [HttpPost("refresh")]
     public async Task<ActionResult<LoginResponse>> RefreshTokens(
-        [FromBody] RefreshTokensRequest request,
         [FromServices] RefreshTokensHandler handler,
         CancellationToken cancellationToken = default)
     {
-        var command = RefreshTokensCommand.Create(request);
+        var refreshToken = CookieManager.GetRefreshToken(HttpContext);
+
+        if (refreshToken.IsFailure)
+            return UnitResult.Failure(refreshToken.Error).ToResponse();
+
+        var command = new RefreshTokensCommand(refreshToken.Value);
         
         var result = await handler.Handle(command, cancellationToken);
+        
+        if (result.IsSuccess)
+            CookieManager.AddRefreshTokenToCookies(HttpContext, result.Value.RefreshToken);
 
         return result.ToResponse();
     }

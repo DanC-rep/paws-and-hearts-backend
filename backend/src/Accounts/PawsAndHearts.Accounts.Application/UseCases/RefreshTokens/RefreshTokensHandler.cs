@@ -38,27 +38,6 @@ public class RefreshTokensHandler : ICommandHandler<LoginResponse, RefreshTokens
         if (oldRefreshSessionResult.Value.ExpirationDate < DateTime.UtcNow)
             return Errors.Tokens.TokenExpired().ToErrorList();
 
-        var userClaimsResult = await _tokenProvider.GetUserClaims(command.AccessToken, cancellationToken);
-
-        if (userClaimsResult.IsFailure)
-            return userClaimsResult.Error.ToErrorList();
-
-        var userIdString = userClaimsResult.Value.FirstOrDefault(c => c.Type == CustomClaims.Id)?.Value;
-
-        if (!Guid.TryParse(userIdString, out var userId))
-            return Errors.General.Null().ToErrorList();
-
-        if (oldRefreshSessionResult.Value.UserId != userId)
-            return Errors.Tokens.InvalidToken().ToErrorList();
-        
-        var userJtiString = userClaimsResult.Value.FirstOrDefault(c => c.Type == CustomClaims.Jti)?.Value;
-
-        if (!Guid.TryParse(userJtiString, out var userJti))
-            return Errors.General.Null().ToErrorList();
-
-        if (oldRefreshSessionResult.Value.Jti != userJti)
-            return Errors.Tokens.InvalidToken().ToErrorList();
-
         _refreshSessionManager.Delete(oldRefreshSessionResult.Value);
         await _unitOfWork.SaveChanges(cancellationToken);
 
@@ -67,6 +46,11 @@ public class RefreshTokensHandler : ICommandHandler<LoginResponse, RefreshTokens
         var refreshToken = await _tokenProvider
             .GenerateRefreshToken(oldRefreshSessionResult.Value.User, accessToken.Jti, cancellationToken);
 
-        return new LoginResponse(accessToken.AccessToken, refreshToken);
+        var user = new UserResponse(
+            oldRefreshSessionResult.Value.User.Id,
+            oldRefreshSessionResult.Value.User.Email!,
+            oldRefreshSessionResult.Value.User.UserName!);
+
+        return new LoginResponse(accessToken.AccessToken, refreshToken, user);
     }
 }
