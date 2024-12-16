@@ -5,11 +5,11 @@ using PawsAndHearts.VolunteerRequests.Domain.Entities;
 using PawsAndHearts.VolunteerRequests.Domain.Enums;
 using PawsAndHearts.VolunteerRequests.Domain.ValueObjects;
 
-namespace PawsAndHearts.UnitTests;
+namespace PawsAndHearts.VolunteerRequests.UnitTests;
 
-public class VolunteerRequestTests
+public class VolunteerRequestsTests
 {
-    [Fact]
+   [Fact]
     public void Create_Volunteer_Request_And_Approve_Successfully()
     {
         // arrange
@@ -106,5 +106,5 @@ public class VolunteerRequestTests
             VolunteerRequestStatus.Waiting);
 
         return volunteerRequest;
-    }
+    } 
 }

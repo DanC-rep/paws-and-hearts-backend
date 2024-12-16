@@ -1,11 +1,11 @@
-using FluentAssertions;
+﻿using FluentAssertions;
 using PawsAndHearts.PetManagement.Domain.Entities;
 using PawsAndHearts.PetManagement.Domain.Enums;
 using PawsAndHearts.PetManagement.Domain.ValueObjects;
 using PawsAndHearts.SharedKernel.ValueObjects;
 using PawsAndHearts.SharedKernel.ValueObjects.Ids;
 
-namespace PawsAndHearts.UnitTests;
+namespace PawsAndHearts.PetManagement.UnitTests;
 
 public class VolunteerTests
 {

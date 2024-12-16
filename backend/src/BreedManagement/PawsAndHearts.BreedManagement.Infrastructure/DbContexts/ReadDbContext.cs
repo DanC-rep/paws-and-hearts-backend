@@ -6,15 +6,22 @@ using PawsAndHearts.BreedManagement.Contracts.Dtos;
 
 namespace PawsAndHearts.BreedManagement.Infrastructure.DbContexts;
 
-public class ReadDbContext(IConfiguration configuration) : DbContext, ISpeciesReadDbContext
+public class ReadDbContext : DbContext, ISpeciesReadDbContext
 {
+    private readonly string _connectionString;
+
+    public ReadDbContext(string connectionString)
+    {
+        _connectionString = connectionString;
+    }
+    
     public IQueryable<SpeciesDto> Species => Set<SpeciesDto>();
 
     public IQueryable<BreedDto> Breeds => Set<BreedDto>();
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
-        optionsBuilder.UseNpgsql(configuration.GetConnectionString(Constants.DATABASE));
+        optionsBuilder.UseNpgsql(_connectionString);
         optionsBuilder.UseSnakeCaseNamingConvention();
         optionsBuilder.EnableSensitiveDataLogging();
         optionsBuilder.UseLoggerFactory(CreateLoggerFactory());

@@ -6,15 +6,22 @@ using PawsAndHearts.Discussions.Contracts.Dtos;
 
 namespace PawsAndHearts.Discussions.Infrastructure.DbContexts;
 
-public class ReadDbContext(IConfiguration configuration) : DbContext, IDiscussionsReadDbContext
+public class ReadDbContext : DbContext, IDiscussionsReadDbContext
 {
+    private readonly string _connectionString;
+
+    public ReadDbContext(string connectionString)
+    {
+        _connectionString = connectionString;
+    }
+    
     public IQueryable<DiscussionDto> Discussions => Set<DiscussionDto>();
 
     public IQueryable<MessageDto> Messages => Set<MessageDto>();
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
-        optionsBuilder.UseNpgsql(configuration.GetConnectionString(Constants.DATABASE));
+        optionsBuilder.UseNpgsql(_connectionString);
         optionsBuilder.UseSnakeCaseNamingConvention();
         optionsBuilder.EnableSensitiveDataLogging();
         optionsBuilder.UseLoggerFactory(CreateLoggerFactory());

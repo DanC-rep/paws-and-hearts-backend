@@ -31,9 +31,9 @@ public class Program
 
         var app = builder.Build();
         
-        var accountsSeeder = app.Services.GetRequiredService<AccountSeeder>();
-        
-        await accountsSeeder.SeedAsync();
+        var accountsSeeder = app.Services.GetService<AccountSeeder>();
+
+        if (accountsSeeder != null) await accountsSeeder.SeedAsync();
 
         app.UseExceptionMiddleware();
 
