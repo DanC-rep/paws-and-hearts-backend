@@ -174,14 +174,14 @@ public class Volunteer : SoftDeletableEntity<VolunteerId>
     }
 
 
-    public Result<FilePath, Error> UpdatePetMainPhoto(Pet pet, PetPhoto petPhoto)
+    public Result<Guid, Error> UpdatePetMainPhoto(Pet pet, PetPhoto petPhoto)
     {
         var result = pet.UpdateMainPhoto(petPhoto);
 
         if (result.IsFailure)
             return result.Error;
 
-        return petPhoto.Path;
+        return petPhoto.FileId;
     }
 
     public void AddPetPhotos(Pet pet, IEnumerable<PetPhoto> photos)

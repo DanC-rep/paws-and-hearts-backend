@@ -6,11 +6,10 @@ using PawsAndHearts.Core.Enums;
 using PawsAndHearts.PetManagement.Application.Interfaces;
 using PawsAndHearts.PetManagement.Domain.ValueObjects;
 using PawsAndHearts.SharedKernel;
-using PawsAndHearts.SharedKernel.ValueObjects;
 
 namespace PawsAndHearts.PetManagement.Application.UseCases.UpdatePetMainPhoto;
 
-public class UpdatePetMainPhotoHandler : ICommandHandler<FilePath, UpdatePetMainPhotoCommand>
+public class UpdatePetMainPhotoHandler : ICommandHandler<Guid, UpdatePetMainPhotoCommand>
 {
     private readonly IVolunteersRepository _repository;
     private readonly IUnitOfWork _unitOfWork;
@@ -26,7 +25,7 @@ public class UpdatePetMainPhotoHandler : ICommandHandler<FilePath, UpdatePetMain
         _logger = logger;
     }
 
-    public async Task<Result<FilePath, ErrorList>> Handle(
+    public async Task<Result<Guid, ErrorList>> Handle(
         UpdatePetMainPhotoCommand command,
         CancellationToken cancellationToken = default)
     {
@@ -40,12 +39,7 @@ public class UpdatePetMainPhotoHandler : ICommandHandler<FilePath, UpdatePetMain
         if (petResult.IsFailure)
             return petResult.Error.ToErrorList();
 
-        var filePath = FilePath.Create(command.FilePath);
-
-        if (filePath.IsFailure)
-            return filePath.Error.ToErrorList();
-
-        var petPhoto = PetPhoto.Create(filePath.Value, true);
+        var petPhoto = PetPhoto.Create(command.FileId, true);
         
         var updateResult = volunteerResult.Value.UpdatePetMainPhoto(petResult.Value, petPhoto.Value);
 

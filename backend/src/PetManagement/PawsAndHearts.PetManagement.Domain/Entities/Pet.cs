@@ -148,13 +148,13 @@ public class Pet : SoftDeletableEntity<PetId>
     internal UnitResult<Error> UpdateMainPhoto(PetPhoto updatedPhoto)
     {
         var fileExists = PetPhotos?
-            .Where(p => p.Path == updatedPhoto.Path).FirstOrDefault();
+            .Where(p => p.FileId == updatedPhoto.FileId).FirstOrDefault();
 
         if (fileExists is null)
             return Errors.General.NotFound();
         
         PetPhotos = PetPhotos?
-            .Select(photo => PetPhoto.Create(photo.Path, photo.Path == updatedPhoto.Path).Value)
+            .Select(photo => PetPhoto.Create(photo.FileId, photo.FileId == updatedPhoto.FileId).Value)
             .OrderByDescending(photo => photo.IsMain)
             .ToList();
 

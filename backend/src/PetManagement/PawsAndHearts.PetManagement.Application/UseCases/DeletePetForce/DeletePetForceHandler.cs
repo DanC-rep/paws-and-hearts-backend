@@ -1,4 +1,4 @@
-﻿using CSharpFunctionalExtensions;
+﻿/*using CSharpFunctionalExtensions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using PawsAndHearts.Core.Abstractions;
@@ -85,4 +85,4 @@ public class DeletePetForceHandler : ICommandHandler<Guid, DeletePetForceCommand
                 .ToErrorList();
         }
     }
-}
+}*/

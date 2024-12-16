@@ -7,7 +7,7 @@ namespace PawsAndHearts.Accounts.Domain;
 
 public class User : IdentityUser<Guid>
 {
-    public string? Photo { get; set; }
+    public Photo? Photo { get; set; }
     
     public FullName FullName { get; set; }
     

@@ -1,34 +1,24 @@
-using CSharpFunctionalExtensions;
-using PawsAndHearts.SharedKernel;
+﻿using CSharpFunctionalExtensions;
 
-namespace PawsAndHearts.PetManagement.Domain.ValueObjects;
+namespace PawsAndHearts.SharedKernel.ValueObjects;
 
-public class PetPhoto : ValueObject
+public class Photo : ValueObject
 {
     private static string[] PERMITTED_FILE_TYPES = { "image/jpg", "image/jpeg", "image/png", "image/gif" };
 
     private static string[] PERMITTED_EXTENSIONS = { "jpg", "jpeg", "png", "gif" };
 
     private static long MAX_FILE_SIZE = 5242880;
-    
-    private PetPhoto(Guid fileId, bool isMain)
+
+    public Photo(Guid fileId)
     {
         FileId = fileId;
-        IsMain = isMain;
     }
     
     public Guid FileId { get; }
     
-    public bool IsMain { get; }
-
-    public static Result<PetPhoto, Error> Create(Guid fileId, bool isMain)
-    {
-        return new PetPhoto(fileId, isMain);
-    }
-
     protected override IEnumerable<IComparable> GetEqualityComponents()
     {
         yield return FileId;
-        yield return IsMain;
     }
 }
