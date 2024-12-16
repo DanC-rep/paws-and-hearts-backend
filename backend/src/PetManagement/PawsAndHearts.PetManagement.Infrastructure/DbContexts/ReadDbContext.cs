@@ -8,15 +8,22 @@ using PawsAndHearts.PetManagement.Contracts.Dtos;
 
 namespace PawsAndHearts.PetManagement.Infrastructure.DbContexts;
 
-public class ReadDbContext(IConfiguration configuration) : DbContext, IVolunteersReadDbContext
+public class ReadDbContext : DbContext, IVolunteersReadDbContext
 {
+    private readonly string _connectionString;
+
+    public ReadDbContext(string connectionString)
+    {
+        _connectionString = connectionString;
+    }
+    
     public IQueryable<VolunteerDto> Volunteers => Set<VolunteerDto>();
     
     public IQueryable<PetDto> Pets => Set<PetDto>();
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
-        optionsBuilder.UseNpgsql(configuration.GetConnectionString(Constants.DATABASE));
+        optionsBuilder.UseNpgsql(_connectionString);
         optionsBuilder.UseSnakeCaseNamingConvention();
         optionsBuilder.EnableSensitiveDataLogging();
         optionsBuilder.UseLoggerFactory(CreateLoggerFactory());

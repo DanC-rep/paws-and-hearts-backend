@@ -7,9 +7,15 @@ using PawsAndHearts.Accounts.Domain;
 
 namespace PawsAndHearts.Accounts.Infrastructure.DbContexts;
 
-public class AccountsWriteDbContext(IConfiguration configuration) 
-    : IdentityDbContext<User, Role, Guid>
+public class AccountsWriteDbContext : IdentityDbContext<User, Role, Guid>
 {
+    private readonly string _connectionString;
+
+    public AccountsWriteDbContext(string connectionString)
+    {
+        _connectionString = connectionString;
+    }
+    
     public DbSet<Permission> Permissions => Set<Permission>();
     
     public DbSet<RolePermission> RolePermissions => Set<RolePermission>();
@@ -24,7 +30,7 @@ public class AccountsWriteDbContext(IConfiguration configuration)
     
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
-        optionsBuilder.UseNpgsql(configuration.GetConnectionString(Constants.DATABASE));
+        optionsBuilder.UseNpgsql(_connectionString);
         optionsBuilder.UseSnakeCaseNamingConvention();
         optionsBuilder.EnableSensitiveDataLogging();
         optionsBuilder.UseLoggerFactory(CreateLoggerFactory());

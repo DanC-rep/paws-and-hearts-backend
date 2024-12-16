@@ -3,9 +3,9 @@ using PawsAndHearts.Discussions.Domain.Entities;
 using PawsAndHearts.Discussions.Domain.ValueObjects;
 using PawsAndHearts.SharedKernel.ValueObjects.Ids;
 
-namespace PawsAndHearts.UnitTests;
+namespace PawsAndHearts.Discussions.UnitTests;
 
-public class DiscussionTests
+public class DiscussionsTests
 {
     [Fact]
     public void Close_Discussion_That_Already_Closed()

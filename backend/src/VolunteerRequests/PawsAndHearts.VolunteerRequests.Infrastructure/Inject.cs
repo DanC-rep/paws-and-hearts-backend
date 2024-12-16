@@ -15,19 +15,23 @@ public static class Inject
         IConfiguration configuration)
     {
         services
-            .AddDatabase()
+            .AddDatabase(configuration)
             .AddRepositories();
 
         return services;
     }
 
-    private static IServiceCollection AddDatabase(this IServiceCollection services)
+    private static IServiceCollection AddDatabase(
+        this IServiceCollection services,
+        IConfiguration configuration)
     {
         services.AddKeyedScoped<IUnitOfWork, UnitOfWork>(Modules.VolunteerRequests);
 
-        services.AddScoped<WriteDbContext>();
+        services.AddScoped<WriteDbContext>(_ =>
+            new WriteDbContext(configuration.GetConnectionString(Constants.DATABASE)!));
 
-        services.AddScoped<IVolunteerRequestsReadDbContext, ReadDbContext>();
+        services.AddScoped<IVolunteerRequestsReadDbContext, ReadDbContext>(_ =>
+            new ReadDbContext(configuration.GetConnectionString(Constants.DATABASE)!));
         
         return services;
     }

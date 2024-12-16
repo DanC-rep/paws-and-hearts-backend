@@ -6,13 +6,20 @@ using PawsAndHearts.VolunteerRequests.Contracts.Dtos;
 
 namespace PawsAndHearts.VolunteerRequests.Infrastructure.DbContexts;
 
-public class ReadDbContext(IConfiguration configuration) : DbContext, IVolunteerRequestsReadDbContext
+public class ReadDbContext : DbContext, IVolunteerRequestsReadDbContext
 {
+    private readonly string _connectionString;
+
+    public ReadDbContext(string connectionString)
+    {
+        _connectionString = connectionString;
+    }
+    
     public IQueryable<VolunteerRequestDto> VolunteerRequests => Set<VolunteerRequestDto>();
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
-        optionsBuilder.UseNpgsql(configuration.GetConnectionString(Constants.DATABASE));
+        optionsBuilder.UseNpgsql(_connectionString);
         optionsBuilder.UseSnakeCaseNamingConvention();
         optionsBuilder.EnableSensitiveDataLogging();
         optionsBuilder.UseLoggerFactory(CreateLoggerFactory());

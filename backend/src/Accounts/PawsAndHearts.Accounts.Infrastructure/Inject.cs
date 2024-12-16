@@ -20,7 +20,7 @@ public static class Inject
     {
         services.ConfigureCustomOptions(configuration);
 
-        services.AddDatabase();
+        services.AddDatabase(configuration);
         
         services.AddScoped<ITokenProvider, JwtTokenProvider>();   
         
@@ -50,11 +50,15 @@ public static class Inject
         return services;
     }
 
-    private static IServiceCollection AddDatabase(this IServiceCollection services)
+    private static IServiceCollection AddDatabase(
+        this IServiceCollection services,
+        IConfiguration configuration)
     {
-        services.AddScoped<AccountsWriteDbContext>();
+        services.AddScoped<AccountsWriteDbContext>(_ =>
+            new AccountsWriteDbContext(configuration.GetConnectionString(Constants.DATABASE)!));
 
-        services.AddScoped<IReadDbContext, AccountsReadDbContext>();
+        services.AddScoped<IReadDbContext, AccountsReadDbContext>(_ =>
+            new AccountsReadDbContext(configuration.GetConnectionString(Constants.DATABASE)!));
 
         services.AddKeyedScoped<IUnitOfWork, UnitOfWork>(Modules.Accounts);
 

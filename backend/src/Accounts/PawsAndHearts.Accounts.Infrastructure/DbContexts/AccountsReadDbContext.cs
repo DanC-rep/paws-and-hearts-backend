@@ -6,8 +6,15 @@ using PawsAndHearts.Accounts.Contracts.Dtos;
 
 namespace PawsAndHearts.Accounts.Infrastructure.DbContexts;
 
-public class AccountsReadDbContext(IConfiguration configuration) : DbContext, IReadDbContext
+public class AccountsReadDbContext : DbContext, IReadDbContext
 {
+    private readonly string _connectionString;
+
+    public AccountsReadDbContext(string connectionString)
+    {
+        _connectionString = connectionString;
+    }
+    
     public IQueryable<UserDto> Users => Set<UserDto>();
     
     public IQueryable<RoleDto> Roles => Set<RoleDto>();
@@ -20,7 +27,7 @@ public class AccountsReadDbContext(IConfiguration configuration) : DbContext, IR
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
-        optionsBuilder.UseNpgsql(configuration.GetConnectionString(Constants.DATABASE));
+        optionsBuilder.UseNpgsql(_connectionString);
         optionsBuilder.UseSnakeCaseNamingConvention();
         optionsBuilder.EnableSensitiveDataLogging();
         optionsBuilder.UseLoggerFactory(CreateLoggerFactory());
