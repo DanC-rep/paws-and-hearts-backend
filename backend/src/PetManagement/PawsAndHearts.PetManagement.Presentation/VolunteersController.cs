@@ -83,7 +83,7 @@ public class VolunteersController : ApplicationController
         return result.ToResponse();
     }
 
-    [Permission("pet.update")]
+    /*[Permission("pet.update")]
     [HttpPost("{volunteerId:guid}/pet/{petId:guid}/photos")]
     public async Task<ActionResult<FilePathList>> AddPhotosToPet(
         [FromRoute] Guid volunteerId,
@@ -101,7 +101,7 @@ public class VolunteersController : ApplicationController
         var result = await handler.Handle(command, cancellationToken);
 
         return result.ToResponse();
-    }
+    }*/
     
     [Permission("volunteer.read")]
     [HttpGet]
@@ -148,7 +148,7 @@ public class VolunteersController : ApplicationController
         return result.ToResponse();
     }
 
-    [Permission("pet.update")]
+    /*[Permission("pet.update")]
     [Authorize]
     [HttpDelete("{volunteerId:guid}/pet/{petId:guid}/photos")]
     public async Task<ActionResult<FilePathList>> DeletePetPhotos(
@@ -162,7 +162,7 @@ public class VolunteersController : ApplicationController
         var result = await handler.Handle(command, cancellationToken);
 
         return result.ToResponse();
-    }
+    }*/
 
     [Permission("pet.update")]
     [HttpPut("{volunteerId:guid}/pet/{petId:guid}/status")]
@@ -195,7 +195,7 @@ public class VolunteersController : ApplicationController
         return result.ToResponse();
     }
 
-    [Permission("pet.delete")]
+    /*[Permission("pet.delete")]
     [HttpDelete("{volunteerId}/pet/{petId:guid}/force")]
     public async Task<ActionResult<Guid>> DeletePetForce(
         [FromRoute] Guid volunteerId,
@@ -208,11 +208,11 @@ public class VolunteersController : ApplicationController
         var result = await handler.Handle(command, cancellationToken);
 
         return result.ToResponse();
-    }
+    }*/
 
     [Permission("pet.update")]
     [HttpPut("{volunteerId:guid}/pet/{petId:guid}/mainPhoto")]
-    public async Task<ActionResult<FilePath>> UpdatePetMainPhoto(
+    public async Task<ActionResult<Guid>> UpdatePetMainPhoto(
         [FromRoute] Guid volunteerId,
         [FromRoute] Guid petId,
         [FromBody] UpdatePetMainPhotoRequest request,

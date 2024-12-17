@@ -24,6 +24,13 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
                 output => SocialNetwork.Create(output.Name, output.Link).Value)
             .HasColumnName("social_networks");
         
+        builder.Property(u => u.Photo)
+            .IsRequired(false)
+            .HasConversion(
+                photo => photo!.FileId,
+                value => new Photo(value))
+            .HasColumnName("photo");
+        
         builder.ComplexProperty(v => v.FullName, fb =>
         {
             fb.Property(f => f.Name)

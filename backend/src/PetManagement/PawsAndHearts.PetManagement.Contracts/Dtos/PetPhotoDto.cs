@@ -1,3 +1,3 @@
 ﻿namespace PawsAndHearts.PetManagement.Contracts.Dtos;
 
-public record PetPhotoDto(string PathToStorage, bool IsMain);
+public record PetPhotoDto(Guid FileId, bool IsMain);
