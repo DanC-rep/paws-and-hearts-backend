@@ -1,3 +1,5 @@
+using FileService.Contracts.Requests;
+using FileService.Contracts.Responses;
 using FileService.Data.Models;
 using FileService.Endpoints;
 using FileService.Infrastructure.MongoDataAccess;
@@ -10,8 +12,6 @@ namespace FileService.Features;
 
 public static class CompleteMultipartUpload
 {
-    private record CompleteMultipartRequest(string UploadId, List<PartETagInfo> Parts);
-    
     public class Endpoint : IEndpoint
     {
         public void MapEndpoint(IEndpointRouteBuilder app)
@@ -41,7 +41,6 @@ public static class CompleteMultipartUpload
         var fileData = new FileData
         {
             Id = fileId,
-            StoragePath = key,
             FileSize = metaData.Headers.ContentLength,
             ContentType = metaData.Headers.ContentType,
             UploadDate = DateTime.UtcNow,
@@ -54,11 +53,9 @@ public static class CompleteMultipartUpload
         BackgroundJob.Schedule<ConfirmConsistencyJob>(
             j => j.Execute(fileId, result.Value.BucketName, key),
             TimeSpan.FromMinutes(1));
+
+        var response = new CompleteMultipartUploadResponse(fileId, result.Value.Location);
         
-        return Results.Ok(new
-        {
-            key,
-            location = result.Value.Location
-        });
+        return Results.Ok(response);
     }
 }

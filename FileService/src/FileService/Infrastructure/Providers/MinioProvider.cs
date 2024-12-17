@@ -14,7 +14,8 @@ public class MinioProvider : IFileProvider
     private readonly IAmazonS3 _s3Client;
     private readonly ILogger<MinioProvider> _logger;
 
-    private const string BUCKET_NAME = "dev-bucket";
+    public const string BUCKET_NAME = "dev-bucket";
+    
     private const int MAX_DEGREE_OF_PARALLELIZM = 10;
     private const int EXPIRATION_URL = 24;
 
@@ -30,12 +31,10 @@ public class MinioProvider : IFileProvider
     {
         try
         {
-            var extension = Path.GetExtension(data.FileName);
-            
             var presignedRequest = new GetPreSignedUrlRequest()
             {
                 BucketName = BUCKET_NAME,
-                Key = $"{data.Key}.{extension}",
+                Key = data.Key,
                 Verb = HttpVerb.PUT,
                 Expires = DateTime.UtcNow.AddHours(EXPIRATION_URL),
                 Protocol = Protocol.HTTP,

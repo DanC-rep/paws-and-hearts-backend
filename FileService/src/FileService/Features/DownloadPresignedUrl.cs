@@ -1,5 +1,7 @@
 using FileService.Endpoints;
+using FileService.Infrastructure.MongoDataAccess;
 using FileService.Interfaces;
+using FileService.Contracts.Responses;
 
 namespace FileService.Features;
 
@@ -9,24 +11,26 @@ public static class DownloadPresignedUrl
     {
         public void MapEndpoint(IEndpointRouteBuilder app)
         {
-            app.MapGet("files/{key}/presigned", Handler);
+            app.MapGet("files/{id:guid}/presigned", Handler);
         }
     }
 
     private static async Task<IResult> Handler(
-        string key,
+        Guid id,
         IFileProvider provider,
+        IFilesRepository repository,
         CancellationToken cancellationToken = default)
     {
-        var presignedUrlResult = await provider.GetPresignedUrlForDownload(key, cancellationToken);
+        var file = await repository.GetById(id, cancellationToken);
+
+        if (file.IsFailure)
+            return Results.BadRequest(file.Error.Message);
+        
+        var presignedUrlResult = await provider.GetPresignedUrlForDownload(file.Value.Key, cancellationToken);
             
         if (presignedUrlResult.IsFailure)
             return Results.BadRequest(presignedUrlResult.Error.Message);
         
-        return Results.Ok(new
-        {
-            key,
-            url = presignedUrlResult.Value
-        });
+        return Results.Ok(new FileResponse(id, presignedUrlResult.Value));
     }
 }

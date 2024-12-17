@@ -1,5 +1,7 @@
 using Amazon.S3;
 using Amazon.S3.Model;
+using FileService.Contracts.Requests;
+using FileService.Contracts.Responses;
 using FileService.Endpoints;
 using FileService.Infrastructure.Providers.Data;
 using FileService.Interfaces;
@@ -8,8 +10,6 @@ namespace FileService.Features;
 
 public static class UploadPresignedPartUrl
 {
-    private record UploadPresignedPartUrlRequest(string UploadId, int PartNumber);
-    
     public class Endpoint : IEndpoint
     {
         public void MapEndpoint(IEndpointRouteBuilder app)
@@ -30,11 +30,9 @@ public static class UploadPresignedPartUrl
         
         if (presignedUrlResult.IsFailure)
             return Results.BadRequest(presignedUrlResult.Error.Message);
+
+        var response = new UploadPresignedPartUrlResponse(key, presignedUrlResult.Value);
         
-        return Results.Ok(new
-        {
-            key,
-            url = presignedUrlResult.Value  
-        });
+        return Results.Ok(response);
     }
 }
