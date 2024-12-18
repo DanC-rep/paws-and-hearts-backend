@@ -98,6 +98,8 @@ public class MinioProvider : IFileProvider
     {
         try
         {
+            await IsBucketExists([BUCKET_NAME], cancellationToken);
+            
             var presignedRequest = new InitiateMultipartUploadRequest
             {
                 BucketName = BUCKET_NAME,

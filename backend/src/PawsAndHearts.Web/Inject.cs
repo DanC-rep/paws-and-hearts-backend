@@ -127,6 +127,7 @@ public static class Inject
     {
         services
             .AddAccountsInfrastructure(configuration)
+            .AddAccountsApplication(configuration)
             .AddAccountsPresentation();
 
         return services;

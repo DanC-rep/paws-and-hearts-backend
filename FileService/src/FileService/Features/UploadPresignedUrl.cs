@@ -29,7 +29,7 @@ public static class UploadPresignedUrl
     {
         var extension = Path.GetExtension(request.FileName);
         
-        var key = $"{Guid.NewGuid()}.{extension}";
+        var key = $"{Guid.NewGuid()}{extension}";
 
         var data = new GetPresignedUrlForUploadData(request.FileName, key, request.ContentType);
 
