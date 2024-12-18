@@ -49,7 +49,8 @@ public class RefreshTokensHandler : ICommandHandler<LoginResponse, RefreshTokens
         var user = new UserResponse(
             oldRefreshSessionResult.Value.User.Id,
             oldRefreshSessionResult.Value.User.Email!,
-            oldRefreshSessionResult.Value.User.UserName!);
+            oldRefreshSessionResult.Value.User.UserName!,
+            oldRefreshSessionResult.Value.User.Roles.Select(r => r.Name!.ToLower()));
 
         return new LoginResponse(accessToken.AccessToken, refreshToken, user);
     }

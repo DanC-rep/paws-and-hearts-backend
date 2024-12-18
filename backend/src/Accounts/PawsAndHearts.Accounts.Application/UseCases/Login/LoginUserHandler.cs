@@ -47,8 +47,12 @@ public class LoginUserHandler : ICommandHandler<LoginResponse, LoginUserCommand>
         
         _logger.LogInformation("Successfully logged in");
 
-        var userResposnse = new UserResponse(user.Id, user.Email!, user.UserName!);
+        var userResponse = new UserResponse(
+            user.Id, 
+            user.Email!, 
+            user.UserName!, 
+            user.Roles.Select(r => r.Name!.ToLower()));
 
-        return new LoginResponse(accessToken.AccessToken, refreshToken, userResposnse);
+        return new LoginResponse(accessToken.AccessToken, refreshToken, userResponse);
     }
 }

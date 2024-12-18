@@ -1,0 +1,17 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net8.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+        <PackageId>FileService.Contracts</PackageId>
+        <Version>1.0.0</Version>
+        <Authors>DanC-rep</Authors>
+        <Company>PawsAndHearts</Company>
+        <PackageDescription>
+            FileService.Contracts contains models used in FileService.Communication
+        </PackageDescription>
+        <RepositoryUrl>https://github.com/DanC-rep/paws-and-hearts-backend</RepositoryUrl>
+    </PropertyGroup>
+
+</Project>

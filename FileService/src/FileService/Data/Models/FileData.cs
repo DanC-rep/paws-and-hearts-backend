@@ -9,8 +9,6 @@ public class FileData
     [BsonGuidRepresentation(GuidRepresentation.Standard)]
     public Guid Id { get; init; }
     
-    public required string StoragePath { get; init; }
-    
     public required DateTime UploadDate { get; init; }
     
     public required long FileSize { get; init; }
@@ -20,6 +18,4 @@ public class FileData
     public required string Key { get; init; }
     
     public required string BucketName { get; init; }
-
-    public string DownloadPath { get; set; } = string.Empty;
 }
