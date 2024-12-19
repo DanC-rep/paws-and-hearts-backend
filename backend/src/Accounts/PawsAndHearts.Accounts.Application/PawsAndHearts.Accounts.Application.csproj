@@ -12,4 +12,9 @@
       <ProjectReference Include="..\PawsAndHearts.Accounts.Domain\PawsAndHearts.Accounts.Domain.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <PackageReference Include="PawsAndHearts.FileService.Communication" Version="1.0.1" />
+      <PackageReference Include="PawsAndHearts.FileService.Contracts" Version="1.0.1" />
+    </ItemGroup>
+
 </Project>

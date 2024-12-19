@@ -98,6 +98,8 @@ public class MinioProvider : IFileProvider
     {
         try
         {
+            await IsBucketExists([BUCKET_NAME], cancellationToken);
+            
             var presignedRequest = new InitiateMultipartUploadRequest
             {
                 BucketName = BUCKET_NAME,
@@ -305,6 +307,64 @@ public class MinioProvider : IFileProvider
             _logger.LogError(ex, "Can not delete file from minio");
             
             return Error.Failure("minio.file.delete", "Can not delete file from minio");
+        }
+    }
+
+    public async Task<UnitResult<Error>> DeleteObjects(
+        IEnumerable<FileData> files, CancellationToken cancellationToken = default)
+    {
+        var semaphoreSlim = new SemaphoreSlim(MAX_DEGREE_OF_PARALLELIZM);
+        var filesList = files.ToList();
+
+        try
+        {
+            var tasks = filesList.Select(async file =>
+                await DeleteObject(file.Key, file.BucketName, semaphoreSlim, cancellationToken));
+
+            var results = await Task.WhenAll(tasks);
+
+            if (results.Any(r => r.IsFailure))
+                return results.First().Error;
+
+            return Result.Success<Error>();
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Can not delete files from minio");
+            
+            return Error.Failure("minio.file.delete", "Can not delete files from minio");
+        }
+    }
+    
+    private async Task<UnitResult<Error>> DeleteObject(
+        string key,
+        string bucketName,
+        SemaphoreSlim semaphoreSlim,
+        CancellationToken cancellationToken = default)
+    {
+        await semaphoreSlim.WaitAsync(cancellationToken);
+
+        try
+        {
+            var request = new DeleteObjectRequest
+            {
+                BucketName = bucketName,
+                Key = key
+            };
+
+            await _s3Client.DeleteObjectAsync(request, cancellationToken);
+
+            return Result.Success<Error>();
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Can not delete file from minio");
+            
+            return Error.Failure("minio.file.delete", "Can not delete file from minio");
+        }
+        finally
+        {
+            semaphoreSlim.Release();
         }
     }
 }

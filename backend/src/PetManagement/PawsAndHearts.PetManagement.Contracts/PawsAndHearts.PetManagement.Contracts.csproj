@@ -11,4 +11,9 @@
       <ProjectReference Include="..\..\Shared\PawsAndHearts.Framework\PawsAndHearts.Framework.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <PackageReference Include="pawsandhearts.fileservice.communication" Version="1.0.1" />
+      <PackageReference Include="pawsandhearts.fileservice.contracts" Version="1.0.1" />
+    </ItemGroup>
+
 </Project>

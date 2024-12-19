@@ -23,7 +23,7 @@ public static class StartMultipartUpload
     {
         var fileExtension = Path.GetExtension(request.FileName);
         
-        var key = $"{Guid.NewGuid()}.{fileExtension}";
+        var key = $"{Guid.NewGuid()}{fileExtension}";
 
         var data = new StartMultipartUploadData(request.FileName, key, request.ContentType);
 

@@ -17,6 +17,28 @@ public class Photo : ValueObject
     
     public Guid FileId { get; }
     
+    public static UnitResult<Error> Validate(
+        string fileName,
+        string contentType,
+        long? size = null)
+    {
+        if (string.IsNullOrWhiteSpace(fileName))
+            return Errors.General.ValueIsInvalid("file name");
+        
+        var extension = Path.GetExtension(fileName).Substring(1);
+
+        if (PERMITTED_EXTENSIONS.All(x => x != extension))
+            return Errors.General.ValueIsInvalid("file extension");
+
+        if (PERMITTED_FILE_TYPES.All(x => x != contentType))
+            return Errors.General.ValueIsInvalid("content type");
+
+        if (size > MAX_FILE_SIZE)
+            return Errors.Files.InvalidSize();
+
+        return Result.Success<Error>();
+    }
+    
     protected override IEnumerable<IComparable> GetEqualityComponents()
     {
         yield return FileId;

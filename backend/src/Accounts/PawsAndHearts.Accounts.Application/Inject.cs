@@ -1,3 +1,17 @@
-﻿namespace PawsAndHearts.Accounts.Application;
+﻿using FileService.Communication;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 
-public static class Inject { }
+namespace PawsAndHearts.Accounts.Application;
+
+public static class Inject
+{
+    public static IServiceCollection AddAccountsApplication(
+        this IServiceCollection services,
+        IConfiguration configuration)
+    {
+        services.AddFileHttpCommunication(configuration);
+
+        return services;
+    }
+}

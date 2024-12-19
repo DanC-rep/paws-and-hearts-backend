@@ -23,4 +23,9 @@ public interface IFileService
 
     Task<Result<GetFilesByIdsResponse, string>> GetFilesByIds(
         GetFilesByIdsRequest request, CancellationToken cancellationToken = default);
+
+    Task<UnitResult<string>> DeleteFiles(
+        DeleteFilesRequest request, CancellationToken cancellationToken = default);
+
+    Task<UnitResult<string>> DeleteFile(Guid id, CancellationToken cancellationToken = default);
 }

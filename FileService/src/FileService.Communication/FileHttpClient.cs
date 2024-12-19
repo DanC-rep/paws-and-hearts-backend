@@ -90,4 +90,25 @@ public class FileHttpClient(HttpClient httpClient) : IFileService
 
         return getFilesByIdsResponse!;
     }
+
+    public async Task<UnitResult<string>> DeleteFiles(
+        DeleteFilesRequest request, CancellationToken cancellationToken = default)
+    {
+        var response = await httpClient.PostAsJsonAsync("files/delete", request, cancellationToken);
+            
+        if (response.StatusCode != HttpStatusCode.OK)
+            return "Fail to delete files";
+
+        return Result.Success<string>();
+    }
+    
+    public async Task<UnitResult<string>> DeleteFile(Guid id, CancellationToken cancellationToken = default)
+    {
+        var response = await httpClient.DeleteAsync($"files/{id}/delete", cancellationToken);
+            
+        if (response.StatusCode != HttpStatusCode.OK)
+            return "Fail to delete file";
+
+        return Result.Success<string>();
+    }
 }
