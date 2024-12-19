@@ -40,4 +40,8 @@ public interface IFileProvider
         string bucketName,
         string key,
         CancellationToken cancellationToken = default);
+
+    Task<UnitResult<Error>> DeleteObjects(
+        IEnumerable<FileData> filesData,
+        CancellationToken cancellationToken = default);
 }

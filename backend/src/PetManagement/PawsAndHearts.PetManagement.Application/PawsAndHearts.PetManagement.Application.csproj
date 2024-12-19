@@ -13,4 +13,9 @@
       <ProjectReference Include="..\PawsAndHearts.PetManagement.Domain\PawsAndHearts.PetManagement.Domain.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <PackageReference Include="pawsandhearts.fileservice.communication" Version="1.0.1" />
+      <PackageReference Include="pawsandhearts.fileservice.contracts" Version="1.0.1" />
+    </ItemGroup>
+
 </Project>

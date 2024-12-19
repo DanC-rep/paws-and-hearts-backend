@@ -5,6 +5,7 @@ using FileService.Contracts.Responses;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using PawsAndHearts.Accounts.Domain;
 using PawsAndHearts.Core.Abstractions;
 using PawsAndHearts.Core.Enums;
@@ -18,15 +19,18 @@ public class CompleteUploadPhotoHandler : ICommandHandler<CompleteMultipartUploa
     private readonly IFileService _fileService;
     private readonly UserManager<User> _userManager;
     private readonly IUnitOfWork _unitOfWork;
+    private readonly ILogger<CompleteUploadPhotoHandler> _logger;
 
     public CompleteUploadPhotoHandler(
         IFileService fileService,
         UserManager<User> userManager,
+        ILogger<CompleteUploadPhotoHandler> logger,
         [FromKeyedServices(Modules.Accounts)] IUnitOfWork unitOfWork)
     {
         _fileService = fileService;
         _userManager = userManager;
         _unitOfWork = unitOfWork;
+        _logger = logger;
     }
     
     public async Task<Result<CompleteMultipartUploadResponse, ErrorList>> Handle(
@@ -52,6 +56,8 @@ public class CompleteUploadPhotoHandler : ICommandHandler<CompleteMultipartUploa
         user.Photo = photo;
 
         await _unitOfWork.SaveChanges(cancellationToken);
+        
+        _logger.LogInformation("Photo was uploaded for user with id {petID}", command.UploadId);
 
         return result.Value;
     }

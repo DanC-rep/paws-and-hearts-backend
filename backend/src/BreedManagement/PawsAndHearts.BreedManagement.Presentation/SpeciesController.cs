@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using PawsAndHearts.BreedManagement.Application.Queries.GetBreedsBySpecies;
 using PawsAndHearts.BreedManagement.Application.Queries.GetSpeciesWithPagination;
 using PawsAndHearts.BreedManagement.Application.UseCases.CreateBreed;
