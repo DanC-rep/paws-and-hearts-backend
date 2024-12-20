@@ -1,26 +1,19 @@
-using System.Text;
 using FluentValidation;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using PawsAndHearts.Accounts.Application;
 using PawsAndHearts.Accounts.Infrastructure;
 using PawsAndHearts.Accounts.Presentation;
-using PawsAndHearts.BreedManagement.Application;
 using PawsAndHearts.BreedManagement.Infrastructure;
 using PawsAndHearts.BreedManagement.Presentation;
 using PawsAndHearts.Core.Abstractions;
 using PawsAndHearts.Core.Options;
-using PawsAndHearts.Discussions.Application;
 using PawsAndHearts.Discussions.Infrastructure;
 using PawsAndHearts.Discussions.Presentation;
 using PawsAndHearts.Framework.Authorization;
-using PawsAndHearts.Framework.BackgroundServices;
-using PawsAndHearts.PetManagement.Application;
 using PawsAndHearts.PetManagement.Infrastructure;
 using PawsAndHearts.PetManagement.Presentation;
-using PawsAndHearts.VolunteerRequests.Application;
 using PawsAndHearts.VolunteerRequests.Infrastructure;
 using Serilog;
 using Serilog.Events;
@@ -127,6 +120,7 @@ public static class Inject
     {
         services
             .AddAccountsInfrastructure(configuration)
+            .AddAccountsApplication(configuration)
             .AddAccountsPresentation();
 
         return services;

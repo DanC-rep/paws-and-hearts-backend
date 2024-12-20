@@ -1,25 +1,25 @@
+using FileService.Contracts.Responses;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using PawsAndHearts.Framework;
 using PawsAndHearts.Framework.Authorization;
 using PawsAndHearts.Framework.Extensions;
-using PawsAndHearts.Framework.Processors;
 using PawsAndHearts.PetManagement.Application.Queries.GetVolunteerById;
 using PawsAndHearts.PetManagement.Application.Queries.GetVolunteersWithPagination;
-using PawsAndHearts.PetManagement.Application.UseCases.AddPhotosToPet;
+using PawsAndHearts.PetManagement.Application.UseCases.CompleteUploadPhotosToPet;
 using PawsAndHearts.PetManagement.Application.UseCases.CreatePet;
 using PawsAndHearts.PetManagement.Application.UseCases.CreateVolunteer;
 using PawsAndHearts.PetManagement.Application.UseCases.DeletePetForce;
 using PawsAndHearts.PetManagement.Application.UseCases.DeletePetPhotos;
 using PawsAndHearts.PetManagement.Application.UseCases.DeletePetSoft;
 using PawsAndHearts.PetManagement.Application.UseCases.DeleteVolunteer;
+using PawsAndHearts.PetManagement.Application.UseCases.StartUploadPhotosToPet;
 using PawsAndHearts.PetManagement.Application.UseCases.UpdateMainInfo;
 using PawsAndHearts.PetManagement.Application.UseCases.UpdatePet;
 using PawsAndHearts.PetManagement.Application.UseCases.UpdatePetMainPhoto;
 using PawsAndHearts.PetManagement.Application.UseCases.UpdatePetStatus;
 using PawsAndHearts.PetManagement.Contracts.Dtos;
 using PawsAndHearts.PetManagement.Contracts.Requests.Volunteer;
-using PawsAndHearts.SharedKernel.ValueObjects;
 
 namespace PawsAndHearts.PetManagement.Presentation;
 
@@ -83,25 +83,37 @@ public class VolunteersController : ApplicationController
         return result.ToResponse();
     }
 
-    /*[Permission("pet.update")]
-    [HttpPost("{volunteerId:guid}/pet/{petId:guid}/photos")]
-    public async Task<ActionResult<FilePathList>> AddPhotosToPet(
+    [Permission("pet.update")]
+    [HttpPost("{volunteerId:guid}/pet/{petId:guid}/start-upload-photos")]
+    public async Task<ActionResult<IEnumerable<StartMultipartUploadResponse>>> StartUploadPhotosToPet(
         [FromRoute] Guid volunteerId,
         [FromRoute] Guid petId,
-        [FromForm] AddPhotosToPetRequest request,
-        [FromServices] AddPhotosToPetHandler handler,
+        [FromBody] StartUploadPhotosToPetRequest request,
+        [FromServices] StartUploadPhotosToPetHandler handler,
         CancellationToken cancellationToken = default)
     {
-        await using var fileProcessor = new FormFileProcessor();
-
-        var fileDtos = fileProcessor.Process(request.Files);
-
-        var command = AddPhotosToPetCommand.Create(volunteerId, petId, fileDtos);
+        var command = StartUploadPhotosToPetCommand.Create(volunteerId, petId, request.Files);
         
         var result = await handler.Handle(command, cancellationToken);
 
         return result.ToResponse();
-    }*/
+    }
+
+    [Permission("pet.update")]
+    [HttpPost("{volunteerId:guid}/pet/{petId:guid}/complete-upload-photos")]
+    public async Task<ActionResult<IEnumerable<CompleteMultipartUploadResponse>>> CompleteUploadPhotosToPet(
+        [FromRoute] Guid volunteerId,
+        [FromRoute] Guid petId,
+        [FromBody] CompleteUploadPhotosToPetRequest request,
+        [FromServices] CompleteUploadPhotosToPetHandler handler,
+        CancellationToken cancellationToken = default)
+    {
+        var command = CompleteUploadPhotosToPetCommand.Create(volunteerId, petId, request.Files);
+        
+        var result = await handler.Handle(command, cancellationToken);
+
+        return result.ToResponse();
+    }
     
     [Permission("volunteer.read")]
     [HttpGet]
@@ -132,7 +144,6 @@ public class VolunteersController : ApplicationController
     }
 
     [Permission("pet.update")]
-    [Authorize]
     [HttpPut("{volunteerId:guid}/pet/{petId:guid}")]
     public async Task<ActionResult<Guid>> UpdatePet(
         [FromRoute] Guid volunteerId,
@@ -148,10 +159,9 @@ public class VolunteersController : ApplicationController
         return result.ToResponse();
     }
 
-    /*[Permission("pet.update")]
-    [Authorize]
+    [Permission("pet.update")]
     [HttpDelete("{volunteerId:guid}/pet/{petId:guid}/photos")]
-    public async Task<ActionResult<FilePathList>> DeletePetPhotos(
+    public async Task<ActionResult> DeletePetPhotos(
         [FromRoute] Guid volunteerId,
         [FromRoute] Guid petId,
         [FromServices] DeletePetPhotosHandler handler,
@@ -162,7 +172,7 @@ public class VolunteersController : ApplicationController
         var result = await handler.Handle(command, cancellationToken);
 
         return result.ToResponse();
-    }*/
+    }
 
     [Permission("pet.update")]
     [HttpPut("{volunteerId:guid}/pet/{petId:guid}/status")]
@@ -195,7 +205,7 @@ public class VolunteersController : ApplicationController
         return result.ToResponse();
     }
 
-    /*[Permission("pet.delete")]
+    [Permission("pet.delete")]
     [HttpDelete("{volunteerId}/pet/{petId:guid}/force")]
     public async Task<ActionResult<Guid>> DeletePetForce(
         [FromRoute] Guid volunteerId,
@@ -208,7 +218,7 @@ public class VolunteersController : ApplicationController
         var result = await handler.Handle(command, cancellationToken);
 
         return result.ToResponse();
-    }*/
+    }
 
     [Permission("pet.update")]
     [HttpPut("{volunteerId:guid}/pet/{petId:guid}/mainPhoto")]

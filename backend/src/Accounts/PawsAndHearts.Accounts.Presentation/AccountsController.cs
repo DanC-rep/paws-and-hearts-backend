@@ -1,19 +1,21 @@
 ﻿using CSharpFunctionalExtensions;
+using FileService.Contracts.Requests;
+using FileService.Contracts.Responses;
 using Microsoft.AspNetCore.Mvc;
 using PawsAndHearts.Accounts.Application.Queries.GetUserById;
+using PawsAndHearts.Accounts.Application.UseCases.CompleteUploadPhoto;
 using PawsAndHearts.Accounts.Application.UseCases.Login;
 using PawsAndHearts.Accounts.Application.UseCases.RefreshTokens;
 using PawsAndHearts.Accounts.Application.UseCases.Register;
+using PawsAndHearts.Accounts.Application.UseCases.StartUploadPhoto;
 using PawsAndHearts.Accounts.Application.UseCases.UpdateUserSocialNetworks;
 using PawsAndHearts.Accounts.Application.UseCases.UpdateVolunteerRequisites;
 using PawsAndHearts.Accounts.Contracts.Dtos;
 using PawsAndHearts.Accounts.Contracts.Requests;
 using PawsAndHearts.Accounts.Contracts.Responses;
-using PawsAndHearts.Core.Models;
 using PawsAndHearts.Framework;
 using PawsAndHearts.Framework.Authorization;
 using PawsAndHearts.Framework.Extensions;
-using PawsAndHearts.SharedKernel;
 
 namespace PawsAndHearts.Accounts.Presentation;
 
@@ -120,4 +122,46 @@ public class AccountsController : ApplicationController
 
         return result.ToResponse();
     }
+
+    [Permission("user.update")]
+    [HttpPost("start-upload-photo")]
+    public async Task<ActionResult<StartMultipartUploadResponse>> StartUploadPhoto(
+        [FromBody] StartMultipartUploadRequest request,
+        [FromServices] StartUploadPhotoHandler handler,
+        [FromServices] ClaimsManager claimsManager,
+        CancellationToken cancellationToken = default)
+    {
+        var userIdResult = claimsManager.GetCurrentUserId(HttpContext);
+
+        if (userIdResult.IsFailure)
+            return UnitResult.Failure(userIdResult.Error).ToResponse();
+
+        var command = StartUploadPhotoCommand.Create(userIdResult.Value, request);
+
+        var result = await handler.Handle(command, cancellationToken);
+
+        return result.ToResponse();
+    }
+
+    [Permission("user.update")]
+    [HttpPost("{key}/complete-multipart-upload")]
+    public async Task<ActionResult<CompleteMultipartUploadResponse>> CompleteUploadPhoto(
+        [FromRoute] string key,
+        [FromBody] CompleteMultipartRequest request,
+        [FromServices] CompleteUploadPhotoHandler handler,
+        [FromServices] ClaimsManager claimsManager,
+        CancellationToken cancellationToken = default)
+    {
+        var userIdResult = claimsManager.GetCurrentUserId(HttpContext);
+
+        if (userIdResult.IsFailure)
+            return UnitResult.Failure(userIdResult.Error).ToResponse();
+
+        var command = CompleteUploadPhotoCommand.Create(userIdResult.Value, key, request);
+
+        var result = await handler.Handle(command, cancellationToken);
+
+        return result.ToResponse();
+    }
+    
 }
