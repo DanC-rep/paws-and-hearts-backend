@@ -4,6 +4,7 @@ using PawsAndHearts.Accounts.Application.Queries.GetUserById;
 using PawsAndHearts.Accounts.Application.UseCases.CreateVolunteerAccount;
 using PawsAndHearts.Accounts.Contracts;
 using PawsAndHearts.Accounts.Contracts.Dtos;
+using PawsAndHearts.Accounts.Contracts.Responses;
 using PawsAndHearts.Core.Dtos;
 using PawsAndHearts.SharedKernel;
 using PawsAndHearts.SharedKernel.ValueObjects;
@@ -35,7 +36,7 @@ public class AccountsContract : IAccountsContract
         return await _getPermissionsByUserIdHandler.Handle(query, cancellationToken);
     }
 
-    public async Task<Result<UserDto, ErrorList>> GetUserById(
+    public async Task<Result<GetUserByIdResponse, ErrorList>> GetUserById(
         Guid userId, 
         CancellationToken cancellationToken = default)
     {

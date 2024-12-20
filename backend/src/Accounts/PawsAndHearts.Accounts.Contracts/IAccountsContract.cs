@@ -1,5 +1,6 @@
 ﻿using CSharpFunctionalExtensions;
 using PawsAndHearts.Accounts.Contracts.Dtos;
+using PawsAndHearts.Accounts.Contracts.Responses;
 using PawsAndHearts.SharedKernel;
 using PawsAndHearts.SharedKernel.ValueObjects;
 
@@ -11,7 +12,9 @@ public interface IAccountsContract
         Guid userId,
         CancellationToken cancellationToken = default);
     
-    Task<Result<UserDto, ErrorList>> GetUserById(Guid userId, CancellationToken cancellationToken = default);
+    Task<Result<GetUserByIdResponse, ErrorList>> GetUserById(
+        Guid userId, 
+        CancellationToken cancellationToken = default);
 
     Task<UnitResult<ErrorList>> CreateVolunteerAccount(
         Guid userId, 

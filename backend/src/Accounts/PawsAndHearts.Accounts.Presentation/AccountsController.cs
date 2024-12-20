@@ -111,7 +111,7 @@ public class AccountsController : ApplicationController
     }
 
     [HttpGet("{userId:guid}")]
-    public async Task<ActionResult<UserDto>> GetUserById(
+    public async Task<ActionResult<GetUserByIdResponse>> GetUserById(
         [FromRoute] Guid userId,
         [FromServices] GetUserByIdHandler handler,
         CancellationToken cancellationToken = default)

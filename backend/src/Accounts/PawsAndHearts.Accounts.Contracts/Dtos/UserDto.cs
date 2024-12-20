@@ -13,6 +13,8 @@ public class UserDto
     public string? Patronymic { get; init; } = default!;
 
     public string UserName { get; init; } = default!;
+    
+    public Guid? PhotoId { get; init; }
 
     public List<RoleDto> Roles { get; init; } = [];
 
