@@ -20,6 +20,9 @@ public class UserDtoConfiguration : IEntityTypeConfiguration<UserDto>
                 json => JsonSerializer.Deserialize<IEnumerable<SocialNetworkDto>>
                     (json, JsonSerializerOptions.Default)!);
 
+        builder.Property(u => u.PhotoId)
+            .HasColumnName("photo");
+
         builder.HasOne(u => u.AdminAccount)
             .WithOne()
             .HasForeignKey<AdminAccountDto>(a => a.UserId);

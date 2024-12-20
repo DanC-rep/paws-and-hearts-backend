@@ -7,6 +7,7 @@ using PawsAndHearts.PetManagement.Application.Queries.GetPetById;
 using PawsAndHearts.PetManagement.Application.Queries.GetPetsWIthPagination;
 using PawsAndHearts.PetManagement.Contracts.Dtos;
 using PawsAndHearts.PetManagement.Contracts.Requests.Pet;
+using PawsAndHearts.PetManagement.Contracts.Responses;
 
 namespace PawsAndHearts.PetManagement.Presentation;
 
@@ -28,7 +29,7 @@ public class PetsController : ApplicationController
 
     [Permission("pet.read")]
     [HttpGet("{id:guid}")]
-    public async Task<ActionResult<PetDto>> GetById(
+    public async Task<ActionResult<PetResponse>> GetById(
         Guid id,
         [FromServices] GetPetByIdHandler handler,
         CancellationToken cancellationToken = default)

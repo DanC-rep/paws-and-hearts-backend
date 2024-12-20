@@ -4,17 +4,18 @@ using PawsAndHearts.Core.Abstractions;
 using PawsAndHearts.Core.Models;
 using PawsAndHearts.PetManagement.Application.Queries.GetPetsWIthPagination;
 using PawsAndHearts.PetManagement.Contracts.Dtos;
+using PawsAndHearts.PetManagement.Contracts.Responses;
 
 namespace PawsAndHearts.PetManagement.IntegrationTests.Pets;
 
 public class GetPetsWithPaginationTest : PetManagementTestsBase
 {
-    private readonly IQueryHandler<PagedList<PetDto>, GetPetsWithPaginationQuery> _sut;
+    private readonly IQueryHandler<PagedList<PetResponse>, GetPetsWithPaginationQuery> _sut;
 
     public GetPetsWithPaginationTest(IntegrationTestsWebFactory factory) : base(factory)
     {
         _sut = _scope.ServiceProvider
-            .GetRequiredService<IQueryHandler<PagedList<PetDto>, GetPetsWithPaginationQuery>>();
+            .GetRequiredService<IQueryHandler<PagedList<PetResponse>, GetPetsWithPaginationQuery>>();
     }
 
     [Fact]

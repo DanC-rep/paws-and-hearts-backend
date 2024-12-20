@@ -10,6 +10,7 @@ using Npgsql;
 using NSubstitute;
 using PawsAndHearts.Accounts.Contracts;
 using PawsAndHearts.Accounts.Contracts.Dtos;
+using PawsAndHearts.Accounts.Contracts.Responses;
 using PawsAndHearts.Accounts.Infrastructure.Seeding;
 using PawsAndHearts.Discussions.Application.Interfaces;
 using PawsAndHearts.Discussions.Infrastructure.DbContexts;
@@ -96,7 +97,7 @@ public class IntegrationTestsWebFactory : WebApplicationFactory<Program>, IAsync
     {
         _accountsContractMock
             .GetUserById(Arg.Any<Guid>(), Arg.Any<CancellationToken>())
-            .Returns(Result.Success<UserDto, ErrorList>(new UserDto
+            .Returns(Result.Success<GetUserByIdResponse, ErrorList>(new GetUserByIdResponse
             {
                 Id = Guid.NewGuid(),
                 Name = "Test",
