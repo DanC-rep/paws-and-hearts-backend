@@ -1,23 +1,29 @@
 ﻿using System.Linq.Expressions;
+using FileService.Communication;
+using FileService.Contracts.Requests;
 using PawsAndHearts.Core.Abstractions;
-using PawsAndHearts.Core.Dtos;
 using PawsAndHearts.Core.Extensions;
 using PawsAndHearts.Core.Models;
 using PawsAndHearts.PetManagement.Application.Interfaces;
 using PawsAndHearts.PetManagement.Contracts.Dtos;
+using PawsAndHearts.PetManagement.Contracts.Responses;
 
 namespace PawsAndHearts.PetManagement.Application.Queries.GetPetsWIthPagination;
 
-public class GetPetsWithPaginationHandler : IQueryHandler<PagedList<PetDto>, GetPetsWithPaginationQuery>
+public class GetPetsWithPaginationHandler : IQueryHandler<PagedList<PetResponse>, GetPetsWithPaginationQuery>
 {
     private readonly IVolunteersReadDbContext _volunteersReadDbContext;
+    private readonly IFileService _fileService;
 
-    public GetPetsWithPaginationHandler(IVolunteersReadDbContext volunteersReadDbContext)
+    public GetPetsWithPaginationHandler(
+        IVolunteersReadDbContext volunteersReadDbContext,
+        IFileService fileService)
     {
         _volunteersReadDbContext = volunteersReadDbContext;
+        _fileService = fileService;
     }
 
-    public async Task<PagedList<PetDto>> Handle(
+    public async Task<PagedList<PetResponse>> Handle(
         GetPetsWithPaginationQuery query,
         CancellationToken cancellationToken = default)
     {
@@ -28,8 +34,30 @@ public class GetPetsWithPaginationHandler : IQueryHandler<PagedList<PetDto>, Get
         petsQuery = query.SortDirection?.ToLower() == "desc"
             ? petsQuery.OrderByDescending(keySelector)
             : petsQuery.OrderBy(keySelector);
+
+        var petsResponse = new List<PetResponse>();
+
+        foreach (var petDto in petsQuery)
+        {
+            if (petDto.PetPhotos is null)
+                 petsResponse.Add(PetResponse.Create(petDto));
+
+            var petPhotosIds = petDto.PetPhotos?.Select(p => p.FileId);
+
+            var filesRequest = new GetFilesByIdsRequest(petPhotosIds!);
+
+            var filesResponse = await _fileService.GetFilesByIds(filesRequest, cancellationToken);
+
+            var urls = filesResponse.Value.FilesInfo.ToDictionary(f => f.Id, f => f.DownloadPath);
+
+            var petPhotosResponse = petDto.PetPhotos!
+                .Where(p => urls.ContainsKey(p.FileId))
+                .Select(p => new PetPhotoResponse(p.FileId, urls[p.FileId], p.IsMain));
+            
+            petsResponse.Add(PetResponse.Create(petDto, petPhotosResponse));
+        }
         
-        var result = await petsQuery.ToPagedList(query.Page, query.PageSize, cancellationToken);
+        var result = petsResponse.ToPagedList(query.Page, query.PageSize);
 
         return result;
     }
@@ -39,7 +67,7 @@ public class GetPetsWithPaginationHandler : IQueryHandler<PagedList<PetDto>, Get
         if (string.IsNullOrEmpty(sortBy))
             return volunteer => volunteer.Id;
 
-        Expression<Func<PetDto, object>> keySelector = sortBy?.ToLower() switch
+        Expression<Func<PetDto, object>> keySelector = sortBy.ToLower() switch
         {
             "name" => pet => pet.Name,
             "birthDate" => pet => pet.BirthDate,

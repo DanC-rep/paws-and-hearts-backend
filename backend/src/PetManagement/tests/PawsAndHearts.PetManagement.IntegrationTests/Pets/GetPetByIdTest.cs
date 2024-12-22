@@ -3,17 +3,18 @@ using Microsoft.Extensions.DependencyInjection;
 using PawsAndHearts.Core.Abstractions;
 using PawsAndHearts.PetManagement.Application.Queries.GetPetById;
 using PawsAndHearts.PetManagement.Contracts.Dtos;
+using PawsAndHearts.PetManagement.Contracts.Responses;
 
 namespace PawsAndHearts.PetManagement.IntegrationTests.Pets;
 
 public class GetPetByIdTest : PetManagementTestsBase
 {
-    private readonly IQueryHandlerWithResult<PetDto, GetPetByIdQuery> _sut;
+    private readonly IQueryHandlerWithResult<PetResponse, GetPetByIdQuery> _sut;
     
     public GetPetByIdTest(IntegrationTestsWebFactory factory) : base(factory)
     {
         _sut = _scope.ServiceProvider
-            .GetRequiredService<IQueryHandlerWithResult<PetDto, GetPetByIdQuery>>();
+            .GetRequiredService<IQueryHandlerWithResult<PetResponse, GetPetByIdQuery>>();
     }
 
     [Fact]

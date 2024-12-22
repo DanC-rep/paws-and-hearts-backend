@@ -2,17 +2,19 @@
 using Microsoft.Extensions.DependencyInjection;
 using PawsAndHearts.Accounts.Application.Queries.GetUserById;
 using PawsAndHearts.Accounts.Contracts.Dtos;
+using PawsAndHearts.Accounts.Contracts.Responses;
 using PawsAndHearts.Core.Abstractions;
 
 namespace PawsAndHearts.Accounts.IntegrationTests;
 
 public class GetUserByIdTest : AccountsTestsBase
 {
-    private readonly IQueryHandlerWithResult<UserDto, GetUserByIdQuery> _sut;
+    private readonly IQueryHandlerWithResult<GetUserByIdResponse, GetUserByIdQuery> _sut;
 
     public GetUserByIdTest(IntegrationTestsWebFactory factory) : base(factory)
     {
-        _sut = _scope.ServiceProvider.GetRequiredService<IQueryHandlerWithResult<UserDto, GetUserByIdQuery>>();
+        _sut = _scope.ServiceProvider.GetRequiredService
+            <IQueryHandlerWithResult<GetUserByIdResponse, GetUserByIdQuery>>();
     }
 
     [Fact]
