@@ -20,24 +20,30 @@ public class JwtTokenProvider : ITokenProvider
     private readonly JwtOptions _jwtOptions;
     private readonly RefreshSessionOptions _refreshSessionOptions;
     private readonly AccountsWriteDbContext _accountsWriteDbContext;
+    private readonly IPermissionManager _permissionManager;
     
     public JwtTokenProvider(
         IOptions<JwtOptions> jwtOptions,
         IOptions<RefreshSessionOptions> refreshSessionOptions,
-        AccountsWriteDbContext accountsWriteDbContext)
+        AccountsWriteDbContext accountsWriteDbContext,
+        IPermissionManager permissionManager)
     {
         _jwtOptions = jwtOptions.Value;
         _refreshSessionOptions = refreshSessionOptions.Value;
         _accountsWriteDbContext = accountsWriteDbContext;
+        _permissionManager = permissionManager;
     }
     
-    public JwtTokenResult GenerateAccessToken(User user)
+    public async Task<JwtTokenResult> GenerateAccessToken(User user, CancellationToken cancellationToken = default)
     {
         var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtOptions.Key));
         var signingCredentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
 
         var roleClaims = user.Roles
             .Select(r => new Claim(CustomClaims.Role, r.Name ?? string.Empty));
+
+        var permissions = await _permissionManager.GetPermissionsByUserId(user.Id, cancellationToken);
+        var permissionsClaims = permissions.Value.Select(p => new Claim(CustomClaims.Permission, p));
 
         var jti = Guid.NewGuid();
 
@@ -48,7 +54,10 @@ public class JwtTokenProvider : ITokenProvider
             new Claim(CustomClaims.Jti, jti.ToString())
         ];
 
-        claims = claims.Concat(roleClaims).ToArray();
+        claims = claims
+            .Concat(roleClaims)
+            .Concat(permissionsClaims)
+            .ToArray();
         
         var jwtToken = new JwtSecurityToken(
             issuer: _jwtOptions.Issuer,

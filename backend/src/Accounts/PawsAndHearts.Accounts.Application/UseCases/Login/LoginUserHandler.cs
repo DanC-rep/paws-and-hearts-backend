@@ -42,7 +42,7 @@ public class LoginUserHandler : ICommandHandler<LoginResponse, LoginUserCommand>
         if (!passwordConfirmed)
             return Errors.Accounts.InvalidCredentials().ToErrorList();
 
-        var accessToken = _tokenProvider.GenerateAccessToken(user);
+        var accessToken = await _tokenProvider.GenerateAccessToken(user, cancellationToken);
         var refreshToken = await _tokenProvider.GenerateRefreshToken(user, accessToken.Jti, cancellationToken);
         
         _logger.LogInformation("Successfully logged in");

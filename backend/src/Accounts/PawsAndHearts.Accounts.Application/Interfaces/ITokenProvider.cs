@@ -8,7 +8,7 @@ namespace PawsAndHearts.Accounts.Application.Interfaces;
 
 public interface ITokenProvider
 {
-   JwtTokenResult GenerateAccessToken(User user);
+   Task<JwtTokenResult> GenerateAccessToken(User user, CancellationToken cancellationToken = default);
    Task<Guid> GenerateRefreshToken(
       User user, Guid accessTokenJti, CancellationToken cancellationToken = default);
 
