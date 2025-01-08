@@ -75,15 +75,10 @@ public class AccountsController : ApplicationController
     public async Task<ActionResult> UpdateUserSocialNetworks(
         [FromBody] UpdateUserSocialNetworksRequest request,
         [FromServices] UpdateUserSocialNetworksHandler handler,
-        [FromServices] ClaimsManager claimsManager,
+        [FromServices] UserScopedData userScopedData,
         CancellationToken cancellationToken = default)
     {
-        var userIdResult = claimsManager.GetCurrentUserId(HttpContext);
-
-        if (userIdResult.IsFailure)
-            return UnitResult.Failure(userIdResult.Error).ToResponse();
-        
-        var command = UpdateUserSocialNetworksCommand.Create(request, userIdResult.Value);
+        var command = UpdateUserSocialNetworksCommand.Create(request, userScopedData.UserId);
         
         var result = await handler.Handle(command, cancellationToken);
 
@@ -95,15 +90,10 @@ public class AccountsController : ApplicationController
     public async Task<ActionResult> UpdateVolunteerRequisites(
         [FromBody] UpdateVolunteerRequisitesRequest request,
         [FromServices] UpdateVolunteerRequisitesHandler handler,
-        [FromServices] ClaimsManager claimsManager,
+        [FromServices] UserScopedData userScopedData,
         CancellationToken cancellationToken = default)
     {
-        var userIdResult = claimsManager.GetCurrentUserId(HttpContext);
-
-        if (userIdResult.IsFailure)
-            return UnitResult.Failure(userIdResult.Error).ToResponse();
-
-        var command = UpdateVolunteerRequisitesCommand.Create(request, userIdResult.Value);
+        var command = UpdateVolunteerRequisitesCommand.Create(request, userScopedData.UserId);
         
         var result = await handler.Handle(command, cancellationToken);
 
@@ -128,15 +118,10 @@ public class AccountsController : ApplicationController
     public async Task<ActionResult<StartMultipartUploadResponse>> StartUploadPhoto(
         [FromBody] StartMultipartUploadRequest request,
         [FromServices] StartUploadPhotoHandler handler,
-        [FromServices] ClaimsManager claimsManager,
+        [FromServices] UserScopedData userScopedData,
         CancellationToken cancellationToken = default)
     {
-        var userIdResult = claimsManager.GetCurrentUserId(HttpContext);
-
-        if (userIdResult.IsFailure)
-            return UnitResult.Failure(userIdResult.Error).ToResponse();
-
-        var command = StartUploadPhotoCommand.Create(userIdResult.Value, request);
+        var command = StartUploadPhotoCommand.Create(userScopedData.UserId, request);
 
         var result = await handler.Handle(command, cancellationToken);
 
@@ -149,15 +134,10 @@ public class AccountsController : ApplicationController
         [FromRoute] string key,
         [FromBody] CompleteMultipartRequest request,
         [FromServices] CompleteUploadPhotoHandler handler,
-        [FromServices] ClaimsManager claimsManager,
+        [FromServices] UserScopedData userScopedData,
         CancellationToken cancellationToken = default)
     {
-        var userIdResult = claimsManager.GetCurrentUserId(HttpContext);
-
-        if (userIdResult.IsFailure)
-            return UnitResult.Failure(userIdResult.Error).ToResponse();
-
-        var command = CompleteUploadPhotoCommand.Create(userIdResult.Value, key, request);
+        var command = CompleteUploadPhotoCommand.Create(userScopedData.UserId, key, request);
 
         var result = await handler.Handle(command, cancellationToken);
 

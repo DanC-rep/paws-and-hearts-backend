@@ -26,15 +26,10 @@ public class VolunteerRequestsController : ApplicationController
     public async Task<ActionResult<Guid>> CreateVolunteerRequest(
         [FromBody] CreateVolunteerRequestRequest request,
         [FromServices] CreateVolunteerRequestHandler handler,
-        [FromServices] ClaimsManager claimsManager,
+        [FromServices] UserScopedData userScopedData,
         CancellationToken cancellationToken = default)
     {
-        var userIdResult = claimsManager.GetCurrentUserId(HttpContext);
-
-        if (userIdResult.IsFailure)
-            return UnitResult.Failure(userIdResult.Error).ToResponse();
-        
-        var command = CreateVolunteerRequestCommand.Create(request, userIdResult.Value);
+        var command = CreateVolunteerRequestCommand.Create(request, userScopedData.UserId);
         
         var result = await handler.Handle(command, cancellationToken);
 
@@ -46,15 +41,10 @@ public class VolunteerRequestsController : ApplicationController
     public async Task<ActionResult> TakeVolunteerRequestForSubmit(
         [FromRoute] Guid volunteerRequestId,
         [FromServices] TakeRequestForSubmitHandler handler,
-        [FromServices] ClaimsManager claimsManager,
+        [FromServices] UserScopedData userScopedData,
         CancellationToken cancellationToken = default)
     {
-        var userIdResult = claimsManager.GetCurrentUserId(HttpContext);
-
-        if (userIdResult.IsFailure)
-            return UnitResult.Failure(userIdResult.Error).ToResponse();
-
-        var command = new TakeRequestForSubmitCommand(volunteerRequestId, userIdResult.Value);
+        var command = new TakeRequestForSubmitCommand(volunteerRequestId, userScopedData.UserId);
         
         var result = await handler.Handle(command, cancellationToken);
 
@@ -67,16 +57,11 @@ public class VolunteerRequestsController : ApplicationController
         [FromRoute] Guid volunteerRequestId,
         [FromBody] SendVolunteerRequestForRevisionRequest request,
         [FromServices] SendVolunteerRequestForRevisionHandler handler,
-        [FromServices] ClaimsManager claimsManager,
+        [FromServices] UserScopedData userScopedData,
         CancellationToken cancellationToken = default)
     {
-        var userIdResult = claimsManager.GetCurrentUserId(HttpContext);
-
-        if (userIdResult.IsFailure)
-            return UnitResult.Failure(userIdResult.Error).ToResponse();
-
         var command = new SendVolunteerRequestForRevisionCommand(
-            userIdResult.Value, volunteerRequestId, request.RejectionComment);
+            userScopedData.UserId, volunteerRequestId, request.RejectionComment);
 
         var result = await handler.Handle(command, cancellationToken);
 
@@ -89,15 +74,10 @@ public class VolunteerRequestsController : ApplicationController
     public async Task<ActionResult> ApproveVolunteerRequest(
         [FromRoute] Guid volunteerRequestId,
         [FromServices] ApproveVolunteerRequestHandler handler,
-        [FromServices] ClaimsManager claimsManager,
+        [FromServices] UserScopedData userScopedData,
         CancellationToken cancellationToken = default)
     {
-        var userIdResult = claimsManager.GetCurrentUserId(HttpContext);
-
-        if (userIdResult.IsFailure)
-            return UnitResult.Failure(userIdResult.Error).ToResponse();
-
-        var command = new ApproveVolunteerRequestCommand(volunteerRequestId, userIdResult.Value);
+        var command = new ApproveVolunteerRequestCommand(volunteerRequestId, userScopedData.UserId);
         
         var result = await handler.Handle(command, cancellationToken);
 
@@ -110,16 +90,11 @@ public class VolunteerRequestsController : ApplicationController
         [FromRoute] Guid volunteerRequestId,
         [FromBody] RejectVolunteerRequestRequest request,
         [FromServices] RejectVolunteerRequestHandler handler,
-        [FromServices] ClaimsManager claimsManager,
+        [FromServices] UserScopedData userScopedData,
         CancellationToken cancellationToken = default)
     {
-        var userIdResult = claimsManager.GetCurrentUserId(HttpContext);
-
-        if (userIdResult.IsFailure)
-            return UnitResult.Failure(userIdResult.Error).ToResponse();
-
         var command = new RejectVolunteerRequestCommand(
-            volunteerRequestId, userIdResult.Value, request.RejectionComment);
+            volunteerRequestId, userScopedData.UserId, request.RejectionComment);
         
         var result = await handler.Handle(command, cancellationToken);
 
@@ -132,16 +107,11 @@ public class VolunteerRequestsController : ApplicationController
         [FromRoute] Guid volunteerRequestId,
         [FromBody] UpdateVolunteerRequestRequest request,
         [FromServices] UpdateVolunteerRequestHandler handler,
-        ClaimsManager claimsManager,
+        UserScopedData userScopedData,
         CancellationToken cancellationToken = default)
     {
-        var userIdResult = claimsManager.GetCurrentUserId(HttpContext);
-
-        if (userIdResult.IsFailure)
-            return UnitResult.Failure(userIdResult.Error).ToResponse();
-        
         var command = new UpdateVolunteerRequestCommand(
-            userIdResult.Value, volunteerRequestId, request.Experience, request.Requisites);
+            userScopedData.UserId, volunteerRequestId, request.Experience, request.Requisites);
         
         var result = await handler.Handle(command, cancellationToken);
 
@@ -153,15 +123,10 @@ public class VolunteerRequestsController : ApplicationController
     public async Task<ActionResult> ResendVolunteerRequest(
         Guid volunteerRequestId,
         [FromServices] ResendVolunteerRequestHandler handler,
-        [FromServices] ClaimsManager claimsManager,
+        [FromServices] UserScopedData userScopedData,
         CancellationToken cancellationToken = default)
     {
-        var userIdResult = claimsManager.GetCurrentUserId(HttpContext);
-
-        if (userIdResult.IsFailure)
-            return UnitResult.Failure(userIdResult.Error).ToResponse();
-
-        var command = new ResendVolunteerRequestCommand(userIdResult.Value, volunteerRequestId);
+        var command = new ResendVolunteerRequestCommand(userScopedData.UserId, volunteerRequestId);
         
         var result = await handler.Handle(command, cancellationToken);
 
@@ -187,15 +152,10 @@ public class VolunteerRequestsController : ApplicationController
     public async Task<ActionResult> GetVolunteersRequestsByAdmin(
         [FromQuery] GetVolunteersRequestsByAdminWithPaginationRequest request,
         [FromServices] GetVolunteersRequestsByAdminWithPaginationHandler handler,
-        [FromServices] ClaimsManager claimsManager,
+        [FromServices] UserScopedData userScopedData,
         CancellationToken cancellationToken = default)
     {
-        var userIdResult = claimsManager.GetCurrentUserId(HttpContext);
-
-        if (userIdResult.IsFailure)
-            return UnitResult.Failure(userIdResult.Error).ToResponse();
-        
-        var query = GetVolunteersRequestsByAdminWithPaginationQuery.Create(request, userIdResult.Value);
+        var query = GetVolunteersRequestsByAdminWithPaginationQuery.Create(request, userScopedData.UserId);
         
         var response = await handler.Handle(query, cancellationToken);
         
@@ -207,15 +167,10 @@ public class VolunteerRequestsController : ApplicationController
     public async Task<ActionResult> GetVolunteerRequestsByUser(
         [FromQuery] GetVolunteerRequestsByUserWithPaginationRequest request,
         [FromServices] GetVolunteerRequestsByUserWithPaginationHandler handler,
-        [FromServices] ClaimsManager claimsManager,
+        [FromServices] UserScopedData userScopedData,
         CancellationToken cancellationToken = default)
     {
-        var userIdResult = claimsManager.GetCurrentUserId(HttpContext);
-
-        if (userIdResult.IsFailure)
-            return UnitResult.Failure(userIdResult.Error).ToResponse();
-        
-        var query = GetVolunteerRequestsByUserWithPaginationQuery.Create(request, userIdResult.Value);
+        var query = GetVolunteerRequestsByUserWithPaginationQuery.Create(request, userScopedData.UserId);
         
         var response = await handler.Handle(query, cancellationToken);
         

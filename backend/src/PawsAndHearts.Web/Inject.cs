@@ -46,7 +46,9 @@ public static class Inject
 
         services.AddSingleton<IAuthorizationHandler, PermissionRequirementHandler>();
         services.AddSingleton<IAuthorizationPolicyProvider, PermissionPolicyProvider>();
-        services.AddScoped<ClaimsManager>();
+        
+        services.AddHttpContextAccessor()
+            .AddScoped<UserScopedData>();
 
         return services;
     }

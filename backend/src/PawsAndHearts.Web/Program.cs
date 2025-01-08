@@ -1,4 +1,5 @@
 using PawsAndHearts.Accounts.Infrastructure.Seeding;
+using PawsAndHearts.Framework.Middlewares;
 using PawsAndHearts.Web.Extensions;
 using Serilog;
 
@@ -56,6 +57,7 @@ public class Program
         });
 
         app.UseAuthentication();
+        app.UseScopedDataMiddleware();
         app.UseAuthorization();
             
         app.MapControllers();

@@ -9,4 +9,6 @@ public static class CustomClaims
     public const string Role = nameof(Role);
 
     public const string Jti = nameof(Jti);
+    
+    public const string Permission = nameof(Permission);
 }

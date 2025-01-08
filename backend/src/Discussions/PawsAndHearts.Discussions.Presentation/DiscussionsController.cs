@@ -21,15 +21,10 @@ public class DiscussionsController : ApplicationController
         [FromRoute] Guid discussionId,
         [FromBody] SendMessageRequest request,
         [FromServices] SendMessageHandler handler,
-        [FromServices] ClaimsManager claimsManager,
+        [FromServices] UserScopedData userScopedData,
         CancellationToken cancellationToken = default)
     {
-        var userIdResult = claimsManager.GetCurrentUserId(HttpContext);
-
-        if (userIdResult.IsFailure)
-            return UnitResult.Failure(userIdResult.Error).ToResponse();
-        
-        var command = new SendMessageCommand(discussionId, userIdResult.Value, request.Message);
+        var command = new SendMessageCommand(discussionId, userScopedData.UserId, request.Message);
         
         var result = await handler.Handle(command, cancellationToken);
 
@@ -43,15 +38,10 @@ public class DiscussionsController : ApplicationController
         [FromRoute] Guid messageId,
         [FromBody] UpdateMessageRequest request,
         [FromServices] UpdateMessageHandler handler,
-        [FromServices] ClaimsManager claimsManager,
+        [FromServices] UserScopedData userScopedData,
         CancellationToken cancellationToken = default)
     {
-        var userIdResult = claimsManager.GetCurrentUserId(HttpContext);
-
-        if (userIdResult.IsFailure)
-            return UnitResult.Failure(userIdResult.Error).ToResponse();
-        
-        var command = new UpdateMessageCommand(discussionId, messageId, userIdResult.Value, request.Message);
+        var command = new UpdateMessageCommand(discussionId, messageId, userScopedData.UserId, request.Message);
 
         var result = await handler.Handle(command, cancellationToken);
 
@@ -64,15 +54,10 @@ public class DiscussionsController : ApplicationController
         [FromRoute] Guid discussionId,
         [FromRoute] Guid messageId,
         [FromServices] DeleteMessageHandler handler,
-        [FromServices] ClaimsManager claimsManager,
+        [FromServices] UserScopedData userScopedData,
         CancellationToken cancellationToken = default)
     {
-        var userIdResult = claimsManager.GetCurrentUserId(HttpContext);
-        
-        if (userIdResult.IsFailure)
-            return UnitResult.Failure(userIdResult.Error).ToResponse();
-        
-        var command = new DeleteMessageCommand(discussionId, messageId, userIdResult.Value);
+        var command = new DeleteMessageCommand(discussionId, messageId, userScopedData.UserId);
 
         var result = await handler.Handle(command, cancellationToken);
 
