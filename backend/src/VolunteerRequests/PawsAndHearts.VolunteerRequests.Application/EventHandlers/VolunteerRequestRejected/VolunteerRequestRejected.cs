@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using PawsAndHearts.SharedKernel;
 using PawsAndHearts.SharedKernel.ValueObjects.Ids;
 using PawsAndHearts.VolunteerRequests.Application.Interfaces;
 using PawsAndHearts.VolunteerRequests.Domain.Entities;
@@ -25,7 +26,7 @@ public class VolunteerRequestRejected : INotificationHandler<VolunteerRequestRej
             .Create(userRestrictionId, notification.UserId);
 
         if (userRestrictionResult.IsFailure)
-            throw new Exception(userRestrictionResult.Error.Message);
+            throw new CanNotCreateEntityException(userRestrictionResult.Error);
 
         await _userRestrictionRepository.Add(userRestrictionResult.Value, cancellationToken);
     }

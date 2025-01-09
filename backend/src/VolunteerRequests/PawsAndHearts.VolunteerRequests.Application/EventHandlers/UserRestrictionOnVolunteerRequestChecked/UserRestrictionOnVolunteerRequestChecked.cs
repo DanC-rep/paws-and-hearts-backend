@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using PawsAndHearts.SharedKernel;
 using PawsAndHearts.VolunteerRequests.Application.Interfaces;
 using PawsAndHearts.VolunteerRequests.Domain.Events;
 
@@ -26,12 +27,12 @@ public class UserRestrictionOnVolunteerRequestChecked :
             var checkBanResult = userRestrictionResult.Value.CheckExpirationOfBan();
 
             if (checkBanResult.IsFailure)
-                throw new Exception(checkBanResult.Error.Message);
+                throw new AccountBannedException(checkBanResult.Error);
 
             var deleteResult = _userRestrictionRepository.Delete(userRestrictionResult.Value, cancellationToken);
 
             if (deleteResult.IsFailure)
-                throw new Exception(deleteResult.Error.Message);
+                throw new DeleteEntityException(deleteResult.Error);
         }
     }
 }
