@@ -14,6 +14,7 @@ using PawsAndHearts.Discussions.Presentation;
 using PawsAndHearts.Framework.Authorization;
 using PawsAndHearts.PetManagement.Infrastructure;
 using PawsAndHearts.PetManagement.Presentation;
+using PawsAndHearts.VolunteerRequests.Application;
 using PawsAndHearts.VolunteerRequests.Infrastructure;
 using Serilog;
 using Serilog.Events;
@@ -154,8 +155,9 @@ public static class Inject
         this IServiceCollection services,
         IConfiguration configuration)
     {
-        services.AddDiscussionsInfrastructure(configuration);
-        services.AddDiscussionsPresentation();
+        services
+            .AddDiscussionsInfrastructure(configuration)
+            .AddDiscussionsPresentation();
 
         return services;
     }
@@ -164,7 +166,9 @@ public static class Inject
         this IServiceCollection services,
         IConfiguration configuration)
     {
-        services.AddVolunteerRequestsInfrastructure(configuration);
+        services
+            .AddVolunteerRequestsInfrastructure(configuration)
+            .AddVolunteerRequestsApplication();
 
         return services;
     }

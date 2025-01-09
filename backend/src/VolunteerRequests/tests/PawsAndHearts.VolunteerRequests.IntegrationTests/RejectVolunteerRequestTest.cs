@@ -36,7 +36,12 @@ public class RejectVolunteerRequestTest : VolunteerRequestsTestsBase
         var volunteerRequest = await _readDbContext.VolunteerRequests
             .FirstOrDefaultAsync(v => v.Id == requestId, cancellationToken);
 
+        var userRestriction = await _writeDbContext.UserRestrictions
+            .FirstOrDefaultAsync(cancellationToken);
+
         volunteerRequest.Should().NotBeNull();
         volunteerRequest?.Status.Should().Be(VolunteerRequestStatus.Rejected.ToString());
+        
+        userRestriction.Should().NotBeNull();
     }
 }

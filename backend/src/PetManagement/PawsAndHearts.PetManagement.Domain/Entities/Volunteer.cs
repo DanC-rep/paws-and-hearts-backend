@@ -7,7 +7,7 @@ using PawsAndHearts.SharedKernel.ValueObjects.Ids;
 
 namespace PawsAndHearts.PetManagement.Domain.Entities;
 
-public class Volunteer : SoftDeletableEntity<VolunteerId>
+public class Volunteer : Entity<VolunteerId>, ISoftDeletable
 {
     private Volunteer(VolunteerId id) : base(id)
     {
@@ -33,6 +33,10 @@ public class Volunteer : SoftDeletableEntity<VolunteerId>
     private readonly List<Pet> _pets = [];
 
     public IReadOnlyList<Pet> Pets => _pets;
+    
+    public bool IsDeleted { get; private set; }
+    
+    public DateTime? DeletionDate { get; private set; }
 
     public int GetPetsFoundHome() => _pets.Count(p => p.HelpStatus == HelpStatus.FoundHome);
 
@@ -47,17 +51,25 @@ public class Volunteer : SoftDeletableEntity<VolunteerId>
         Experience = experience;
     }
 
-    public override void Delete()
+    public void Delete()
     {
-        base.Delete();
+        if (IsDeleted)
+            return;
+        
+        IsDeleted = true;
+        DeletionDate = DateTime.UtcNow;
 
         foreach (var pet in _pets)
             pet.Delete();
     }
 
-    public override void Restore()
+    public void Restore()
     {
-        base.Restore();
+        if (!IsDeleted)
+            return;
+        
+        IsDeleted = false;
+        DeletionDate = null;
 
         foreach (var pet in _pets)
             pet.Restore();

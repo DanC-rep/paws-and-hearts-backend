@@ -1,5 +1,6 @@
 ﻿using CSharpFunctionalExtensions;
 using FluentValidation;
+using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using PawsAndHearts.Core.Abstractions;
@@ -10,6 +11,7 @@ using PawsAndHearts.SharedKernel.ValueObjects;
 using PawsAndHearts.SharedKernel.ValueObjects.Ids;
 using PawsAndHearts.VolunteerRequests.Application.Interfaces;
 using PawsAndHearts.VolunteerRequests.Domain.Entities;
+using PawsAndHearts.VolunteerRequests.Domain.Events;
 using PawsAndHearts.VolunteerRequests.Domain.ValueObjects;
 
 namespace PawsAndHearts.VolunteerRequests.Application.UseCases.CreateVolunteerRequest;
@@ -17,23 +19,23 @@ namespace PawsAndHearts.VolunteerRequests.Application.UseCases.CreateVolunteerRe
 public class CreateVolunteerRequestHandler : ICommandHandler<Guid, CreateVolunteerRequestCommand>
 {
     private readonly IVolunteerRequestsRepository _volunteerRequestsRepository;
-    private readonly IUserRestrictionRepository _userRestrictionRepository;
     private readonly IUnitOfWork _unitOfWork;
     private readonly ILogger<CreateVolunteerRequestHandler> _logger;
     private readonly IValidator<CreateVolunteerRequestCommand> _validator;
+    private readonly IPublisher _publisher;
 
     public CreateVolunteerRequestHandler(
         IVolunteerRequestsRepository volunteerRequestsRepository,
-        IUserRestrictionRepository userRestrictionRepository,
         [FromKeyedServices(Modules.VolunteerRequests)]  IUnitOfWork unitOfWork,
         ILogger<CreateVolunteerRequestHandler> logger,
-        IValidator<CreateVolunteerRequestCommand> validator)
+        IValidator<CreateVolunteerRequestCommand> validator,
+        IPublisher publisher)
     {
         _volunteerRequestsRepository = volunteerRequestsRepository;
-        _userRestrictionRepository = userRestrictionRepository;
         _unitOfWork = unitOfWork;
         _logger = logger;
         _validator = validator;
+        _publisher = publisher;
     }
     
     public async Task<Result<Guid, ErrorList>> Handle(
@@ -49,21 +51,8 @@ public class CreateVolunteerRequestHandler : ICommandHandler<Guid, CreateVolunte
 
         try
         {
-            var userRestrictionResult = await _userRestrictionRepository
-                .GetByUserId(command.UserId, cancellationToken);
-
-            if (userRestrictionResult.IsSuccess)
-            {
-                var checkBanResult = userRestrictionResult.Value.CheckExpirationOfBan();
-
-                if (checkBanResult.IsFailure)
-                    return checkBanResult.Error.ToErrorList();
-
-                var deleteResult = _userRestrictionRepository.Delete(userRestrictionResult.Value, cancellationToken);
-
-                if (deleteResult.IsFailure)
-                    return deleteResult.Error.ToErrorList();
-            }
+            await _publisher.PublishDomainEvent(
+                new UserRestrictionOnVolunteerRequestCheckedEvent(command.UserId), cancellationToken);
         
             var requisites = command.Requisites.Select(r =>
                 Requisite.Create(r.Name, r.Description).Value).ToList();
