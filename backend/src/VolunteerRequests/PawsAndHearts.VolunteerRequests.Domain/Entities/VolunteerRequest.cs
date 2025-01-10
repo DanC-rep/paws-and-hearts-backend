@@ -2,11 +2,12 @@
 using PawsAndHearts.SharedKernel;
 using PawsAndHearts.SharedKernel.ValueObjects.Ids;
 using PawsAndHearts.VolunteerRequests.Domain.Enums;
+using PawsAndHearts.VolunteerRequests.Domain.Events;
 using PawsAndHearts.VolunteerRequests.Domain.ValueObjects;
 
 namespace PawsAndHearts.VolunteerRequests.Domain.Entities;
 
-public class VolunteerRequest : Entity<VolunteerRequestId>
+public class VolunteerRequest : DomainEntity<VolunteerRequestId>
 {
     private VolunteerRequest(VolunteerRequestId id) : base(id)
     {
@@ -68,6 +69,10 @@ public class VolunteerRequest : Entity<VolunteerRequestId>
 
         RejectionComment = rejectionComment;
         Status = VolunteerRequestStatus.Rejected;
+
+        var @event = new VolunteerRequestRejectedEvent(UserId);
+        
+        AddDomainEvent(@event);
 
         return Result.Success<Error>();
     }

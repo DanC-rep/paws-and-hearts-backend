@@ -7,7 +7,7 @@ using PawsAndHearts.SharedKernel.ValueObjects.Ids;
 
 namespace PawsAndHearts.PetManagement.Domain.Entities;
 
-public class Pet : SoftDeletableEntity<PetId>
+public class Pet : Entity<PetId>, ISoftDeletable
 {
     private Pet(PetId id) : base(id)
     {
@@ -79,6 +79,10 @@ public class Pet : SoftDeletableEntity<PetId>
     public IReadOnlyList<Requisite> Requisites { get; private set; }
 
     public IReadOnlyList<PetPhoto>? PetPhotos { get; private set; }
+    
+    public bool IsDeleted { get; private set; }
+    
+    public DateTime? DeletionDate { get; private set; }
 
     public void SetPosition(Position position) =>
         Position = position;
@@ -159,5 +163,23 @@ public class Pet : SoftDeletableEntity<PetId>
             .ToList();
 
         return Result.Success<Error>();
+    }
+
+    public void Delete()
+    {
+        if (IsDeleted)
+            return;
+        
+        IsDeleted = true;
+        DeletionDate = DateTime.UtcNow;
+    }
+
+    public void Restore()
+    {
+        if (!IsDeleted)
+            return;
+        
+        IsDeleted = false;
+        DeletionDate = null;
     }
 }

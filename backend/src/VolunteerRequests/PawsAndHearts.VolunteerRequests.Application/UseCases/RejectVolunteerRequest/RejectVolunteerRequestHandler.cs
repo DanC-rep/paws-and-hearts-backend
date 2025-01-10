@@ -1,38 +1,37 @@
 ﻿using CSharpFunctionalExtensions;
 using FluentValidation;
+using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using PawsAndHearts.Core.Abstractions;
 using PawsAndHearts.Core.Enums;
 using PawsAndHearts.Core.Extensions;
 using PawsAndHearts.SharedKernel;
-using PawsAndHearts.SharedKernel.ValueObjects.Ids;
 using PawsAndHearts.VolunteerRequests.Application.Interfaces;
-using PawsAndHearts.VolunteerRequests.Domain.Entities;
 using PawsAndHearts.VolunteerRequests.Domain.ValueObjects;
 
 namespace PawsAndHearts.VolunteerRequests.Application.UseCases.RejectVolunteerRequest;
 
 public class RejectVolunteerRequestHandler : ICommandHandler<RejectVolunteerRequestCommand>
 {
-    private readonly IUserRestrictionRepository _userRestrictionRepository;
     private readonly IVolunteerRequestsRepository _volunteerRequestsRepository;
     private readonly IUnitOfWork _unitOfWork;
     private readonly IValidator<RejectVolunteerRequestCommand> _validator;
     private readonly ILogger<RejectVolunteerRequestHandler> _logger;
+    private readonly IPublisher _publisher;
 
     public RejectVolunteerRequestHandler(
-        IUserRestrictionRepository userRestrictionRepository,
         IVolunteerRequestsRepository volunteerRequestsRepository,
         [FromKeyedServices(Modules.VolunteerRequests)] IUnitOfWork unitOfWork,
         IValidator<RejectVolunteerRequestCommand> validator,
-        ILogger<RejectVolunteerRequestHandler> logger)
+        ILogger<RejectVolunteerRequestHandler> logger,
+        IPublisher publisher)
     {
-        _userRestrictionRepository = userRestrictionRepository;
         _volunteerRequestsRepository = volunteerRequestsRepository;
         _unitOfWork = unitOfWork;
         _validator = validator;
         _logger = logger;
+        _publisher = publisher;
     }
     
     public async Task<UnitResult<ErrorList>> Handle(
@@ -59,19 +58,11 @@ public class RejectVolunteerRequestHandler : ICommandHandler<RejectVolunteerRequ
                 return Error.Failure("access.denied",
                     "This request is under consideration by another admin").ToErrorList();
 
-            var userRestrictionId = UserRestrictionId.NewId();
-
-            var userRestrictionResult = UserRestriction
-                .Create(userRestrictionId, volunteerRequestResult.Value.UserId);
-
-            if (userRestrictionResult.IsFailure)
-                return userRestrictionResult.Error.ToErrorList();
-
-            await _userRestrictionRepository.Add(userRestrictionResult.Value, cancellationToken);
-
             var rejectionComment = RejectionComment.Create(command.RejectionComment).Value;
 
             var result = volunteerRequestResult.Value.Reject(rejectionComment);
+
+            await _publisher.PublishDomainEvents(volunteerRequestResult.Value, cancellationToken);
 
             if (result.IsFailure)
                 return result.Error.ToErrorList();
