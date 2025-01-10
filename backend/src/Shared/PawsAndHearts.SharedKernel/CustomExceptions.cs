@@ -19,9 +19,9 @@ public abstract class CustomException : Exception
     }
 }
 
-public class CanNotCreateEntityException : CustomException
+public class CanNotCreateRecordException : CustomException
 {
-    public CanNotCreateEntityException(Error error) : base(error) { }
+    public CanNotCreateRecordException(Error error) : base(error) { }
 }
 
 public class AccountBannedException : CustomException
@@ -29,7 +29,7 @@ public class AccountBannedException : CustomException
     public AccountBannedException(Error error) : base(error) { }
 }
 
-public class DeleteEntityException : CustomException
+public class DeleteRecordException : CustomException
 {
-    public DeleteEntityException(Error error) : base(error) { }
+    public DeleteRecordException(Error error) : base(error) { }
 }

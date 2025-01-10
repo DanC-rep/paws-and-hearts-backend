@@ -26,7 +26,7 @@ public class VolunteerRequestRejected : INotificationHandler<VolunteerRequestRej
             .Create(userRestrictionId, notification.UserId);
 
         if (userRestrictionResult.IsFailure)
-            throw new CanNotCreateEntityException(userRestrictionResult.Error);
+            throw new CanNotCreateRecordException(userRestrictionResult.Error);
 
         await _userRestrictionRepository.Add(userRestrictionResult.Value, cancellationToken);
     }

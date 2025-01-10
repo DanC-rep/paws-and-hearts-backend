@@ -32,7 +32,7 @@ public class UserRestrictionOnVolunteerRequestChecked :
             var deleteResult = _userRestrictionRepository.Delete(userRestrictionResult.Value, cancellationToken);
 
             if (deleteResult.IsFailure)
-                throw new DeleteEntityException(deleteResult.Error);
+                throw new DeleteRecordException(deleteResult.Error);
         }
     }
 }
