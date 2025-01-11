@@ -14,18 +14,18 @@ namespace PawsAndHearts.VolunteerRequests.Application.UseCases.ApproveVolunteerR
 public class ApproveVolunteerRequestHandler : ICommandHandler<ApproveVolunteerRequestCommand>
 {
     private readonly IVolunteerRequestsRepository _repository;
-    private readonly IPublishEndpoint _publishEndpoint;
+    private readonly IOutboxRepository _outboxRepository;
     private readonly IUnitOfWork _unitOfWork;
     private readonly ILogger<ApproveVolunteerRequestHandler> _logger;
 
     public ApproveVolunteerRequestHandler(
         IVolunteerRequestsRepository repository,
-        IPublishEndpoint publishEndpoint,
+        IOutboxRepository outboxRepository,
         [FromKeyedServices(Modules.VolunteerRequests)] IUnitOfWork unitOfWork,
         ILogger<ApproveVolunteerRequestHandler> logger)
     {
         _repository = repository;
-        _publishEndpoint = publishEndpoint;
+        _outboxRepository = outboxRepository;
         _unitOfWork = unitOfWork;
         _logger = logger;
     }
@@ -44,17 +44,18 @@ public class ApproveVolunteerRequestHandler : ICommandHandler<ApproveVolunteerRe
 
         if (result.IsFailure)
             return result.Error.ToErrorList();
-
-        await _unitOfWork.SaveChanges(cancellationToken);
-            
+        
         var requisitesDtos = volunteerRequestResult.Value.VolunteerInfo.Requisites
             .Select(r => new RequisiteDto(r.Name, r.Description));
-            
-        await _publishEndpoint.Publish(new ApproveVolunteerRequestEvent(
-                volunteerRequestResult.Value.UserId,
-                volunteerRequestResult.Value.VolunteerInfo.Experience.Value,
-                requisitesDtos), 
-            cancellationToken);
+
+        var @event = new ApproveVolunteerRequestEvent(
+            volunteerRequestResult.Value.UserId,
+            volunteerRequestResult.Value.VolunteerInfo.Experience.Value,
+            requisitesDtos);
+
+        await _outboxRepository.Add(@event, cancellationToken);
+
+        await _unitOfWork.SaveChanges(cancellationToken);
             
         _logger.LogInformation("Volunteer request {requestId} was approved successfully", 
             command.VolunteerRequestId);

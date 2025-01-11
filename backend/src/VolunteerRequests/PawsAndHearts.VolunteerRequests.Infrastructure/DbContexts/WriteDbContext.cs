@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using PawsAndHearts.VolunteerRequests.Domain.Entities;
+using PawsAndHearts.VolunteerRequests.Infrastructure.Outbox;
 
 namespace PawsAndHearts.VolunteerRequests.Infrastructure.DbContexts;
 
@@ -14,6 +15,7 @@ public class WriteDbContext : DbContext
     }
     public DbSet<VolunteerRequest> VolunteerRequests => Set<VolunteerRequest>();
     public DbSet<UserRestriction> UserRestrictions => Set<UserRestriction>();
+    public DbSet<OutboxMessage> OutboxMessages => Set<OutboxMessage>();
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
