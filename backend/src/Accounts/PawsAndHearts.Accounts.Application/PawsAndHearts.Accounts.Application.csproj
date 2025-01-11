@@ -8,6 +8,7 @@
 
     <ItemGroup>
       <ProjectReference Include="..\..\Shared\PawsAndHearts.Core\PawsAndHearts.Core.csproj" />
+      <ProjectReference Include="..\..\VolunteerRequests\PawsAndHearts.VolunteerRequests.Contracts\PawsAndHearts.VolunteerRequests.Contracts.csproj" />
       <ProjectReference Include="..\PawsAndHearts.Accounts.Contracts\PawsAndHearts.Accounts.Contracts.csproj" />
       <ProjectReference Include="..\PawsAndHearts.Accounts.Domain\PawsAndHearts.Accounts.Domain.csproj" />
     </ItemGroup>

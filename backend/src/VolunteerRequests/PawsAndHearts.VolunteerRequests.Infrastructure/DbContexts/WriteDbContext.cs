@@ -1,7 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-using PawsAndHearts.SharedKernel.ValueObjects.Ids;
 using PawsAndHearts.VolunteerRequests.Domain.Entities;
 
 namespace PawsAndHearts.VolunteerRequests.Infrastructure.DbContexts;
