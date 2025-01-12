@@ -10,8 +10,10 @@
     depends_on:
       - postgres
       - minio
-      - seq
+      - elasticsearch
+      - rabbitmq
     restart: always
+
   postgres:
     container_name: postgres
     image: postgres
@@ -24,15 +26,55 @@
       - "5434:5432"
     volumes:
       - postgres-data:/var/lib/postgresql/data
-  seq:
-    image: datalust/seq:latest
-    container_name: seq
-    restart: always
-    environment:
-      - ACCEPT_EULA=Y
+
+  elasticsearch:
+    container_name: elasticsearch
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.16.1
     ports:
-      - "5341:5341"
-      - "8081:80"
+      - "9200:9200"
+    volumes:
+      - elasticsearch-data:/usr/share/elasticsearch/data
+    environment:
+      - xpack.security.enabled=false
+      - discovery.type=single-node
+    restart: always
+
+  kibana:
+    container_name: kibana
+    image: docker.elastic.co/kibana/kibana:8.16.1
+    ports:
+      - "5601:5601"
+    depends_on:
+      - elasticsearch
+    environment:
+      - ELASTICSEARCH_URL=http://localhost:9200
+    restart: always
+    
+  prometheus:
+    container_name: prometheus
+    image: prom/prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus_data:/prometheus
+    restart: always
+    
+  grafana:
+    image: grafana/grafana
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+      - GF_INSTALL_PLUGINS=grafana-clock-panel
+      - grafana-simple-json-datasource
+    volumes:
+      - grafana_data:/var/lig/grafana
+    depends_on:
+      - prometheus
+    restart: always
+
   minio:
     container_name: minio
     image: minio/minio
@@ -43,6 +85,7 @@
       - minio_data:/data
     command: server --console-address ":9001" /data
     restart: always
+
   nginx:
     image: nginx:latest
     ports:
@@ -52,6 +95,7 @@
     depends_on:
       - web
     restart: always
+
   mongodb:
     image: mongo
     container_name: mongodb
@@ -60,9 +104,10 @@
       MONGO_INITDB_ROOT_USERNAME: mongoadmin
       MONGO_INITDB_ROOT_PASSWORD: mongopassword
     ports: 
-      - 27017:27017
+      - "27017:27017"
     volumes:
       - mongo_data:/data/db
+
   rabbitmq:
     image: rabbitmq:management-alpine
     container_name: rabbitmq
@@ -77,3 +122,6 @@ volumes:
   minio_data:
   mongo_data:
   rabbitmq_data:
+  elasticsearch-data:
+  prometheus_data:
+  grafana_data:

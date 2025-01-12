@@ -1,4 +1,9 @@
+using System.Reflection;
 using Amazon.S3;
+using Elastic.CommonSchema.Serilog;
+using Elastic.Ingest.Elasticsearch;
+using Elastic.Ingest.Elasticsearch.DataStreams;
+using Elastic.Serilog.Sinks;
 using FileService.Data.Options;
 using FileService.Infrastructure.MongoDataAccess;
 using FileService.Infrastructure.Providers;
@@ -6,8 +11,9 @@ using FileService.Interfaces;
 using Hangfire;
 using Hangfire.PostgreSql;
 using Minio;
-using MongoDB.Bson.Serialization;
 using MongoDB.Driver;
+using OpenTelemetry.Metrics;
+using OpenTelemetry.Resources;
 using Serilog;
 using Serilog.Events;
 
@@ -25,7 +31,8 @@ public static class DependencyInjection
             .AddAmazonS3()
             .AddMongoDb(configuration)
             .AddHangfire(configuration)
-            .AddRepositories();
+            .AddRepositories()
+            .AddMetrics(configuration);
 
         return services;
     }
@@ -52,9 +59,17 @@ public static class DependencyInjection
         this IServiceCollection services,
         IConfiguration configuration)
     {
+        string indexFormat = $"{Assembly.GetExecutingAssembly().GetName().Name?.ToLower().Replace(".", "-")}-{DateTime.UtcNow:dd-MM-yyyy}";
+        
         Log.Logger = new LoggerConfiguration()
-            .WriteTo.Seq(configuration.GetConnectionString("Seq") 
-                         ?? throw new ArgumentNullException("Seq"))
+            .WriteTo.Elasticsearch(
+                [new Uri("http://localhost:9200")],
+                options =>
+                {
+                    options.DataStream = new DataStreamName(indexFormat);
+                    options.TextFormatting = new EcsTextFormatterConfiguration();
+                    options.BootstrapMethod = BootstrapMethod.Silent;
+                })
             .MinimumLevel.Override("Microsoft.AspNetCore.Hosting", LogEventLevel.Warning)
             .MinimumLevel.Override("Microsoft.AspNetCore.Mvc", LogEventLevel.Warning)
             .MinimumLevel.Override("Microsoft.AspNetCore.Routing", LogEventLevel.Warning)
@@ -113,6 +128,21 @@ public static class DependencyInjection
         );
 
         services.AddHangfireServer();
+
+        return services;
+    }
+    
+    private static IServiceCollection AddMetrics(
+        this IServiceCollection services, IConfiguration configuration)
+    {
+        services.AddOpenTelemetry()
+            .WithMetrics(b => b
+                .SetResourceBuilder(ResourceBuilder.CreateDefault().AddService("FileService"))
+                .AddAspNetCoreInstrumentation()
+                .AddHttpClientInstrumentation()
+                .AddRuntimeInstrumentation()
+                .AddProcessInstrumentation()
+                .AddPrometheusExporter());
 
         return services;
     }
