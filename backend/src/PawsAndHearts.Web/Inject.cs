@@ -1,8 +1,10 @@
 using FluentValidation;
+using MassTransit;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.OpenApi.Models;
 using PawsAndHearts.Accounts.Application;
+using PawsAndHearts.Accounts.Application.Consumers;
 using PawsAndHearts.Accounts.Infrastructure;
 using PawsAndHearts.Accounts.Presentation;
 using PawsAndHearts.BreedManagement.Infrastructure;
@@ -23,7 +25,25 @@ namespace PawsAndHearts.Web;
 
 public static class Inject
 {
-    public static IServiceCollection AddAuthServices(
+    public static IServiceCollection AddModules(
+        this IServiceCollection services,
+        IConfiguration configuration)
+    {
+        services
+            .AddCustomSwaggerGen()
+            .AddAccountsModule(configuration)
+            .AddBreedManagementModule(configuration)
+            .AddPetManagementModule(configuration)
+            .AddDiscussionsModule(configuration)
+            .AddVolunteerRequestsModule(configuration)
+            .AddApplicationLayers()
+            .AddAuthServices(configuration)
+            .AddMessageBus(configuration);
+
+        return services;
+    }
+    
+    private static IServiceCollection AddAuthServices(
         this IServiceCollection services,
         IConfiguration configuration)
     {
@@ -54,7 +74,7 @@ public static class Inject
         return services;
     }
 
-    public static IServiceCollection AddCustomSwaggerGen(this IServiceCollection services)
+    private static IServiceCollection AddCustomSwaggerGen(this IServiceCollection services)
     {
         services.AddSwaggerGen(c =>
         {
@@ -117,7 +137,7 @@ public static class Inject
         return services;
     }
 
-    public static IServiceCollection AddAccountsModule(
+    private static IServiceCollection AddAccountsModule(
         this IServiceCollection services,
         IConfiguration configuration)
     {
@@ -129,7 +149,7 @@ public static class Inject
         return services;
     }
 
-    public static IServiceCollection AddBreedManagementModule(
+    private static IServiceCollection AddBreedManagementModule(
         this IServiceCollection services,
         IConfiguration configuration)
     {
@@ -140,7 +160,7 @@ public static class Inject
         return services;
     }
 
-    public static IServiceCollection AddPetManagementModule(
+    private static IServiceCollection AddPetManagementModule(
         this IServiceCollection services,
         IConfiguration configuration)
     {
@@ -151,7 +171,7 @@ public static class Inject
         return services;
     }
 
-    public static IServiceCollection AddDiscussionsModule(
+    private static IServiceCollection AddDiscussionsModule(
         this IServiceCollection services,
         IConfiguration configuration)
     {
@@ -162,7 +182,7 @@ public static class Inject
         return services;
     }
     
-    public static IServiceCollection AddVolunteerRequestsModule(
+    private static IServiceCollection AddVolunteerRequestsModule(
         this IServiceCollection services,
         IConfiguration configuration)
     {
@@ -173,7 +193,7 @@ public static class Inject
         return services;
     }
     
-    public static IServiceCollection AddApplicationLayers(this IServiceCollection services)
+    private static IServiceCollection AddApplicationLayers(this IServiceCollection services)
     {
         var assemblies = new[]
         {
@@ -197,6 +217,33 @@ public static class Inject
             .WithScopedLifetime());
 
         services.AddValidatorsFromAssemblies(assemblies);
+        return services;
+    }
+
+    private static IServiceCollection AddMessageBus(
+        this IServiceCollection services,
+        IConfiguration configuration)
+    {
+        services.AddMassTransit(configure =>
+        {
+            configure.SetKebabCaseEndpointNameFormatter();
+
+            configure.AddConsumer<ApproveVolunteerRequestEventConsumer>();
+
+            configure.UsingRabbitMq((context, cfg) =>
+            {
+                cfg.Host(new Uri(configuration["RabbitMQ:Host"]!), h =>
+                {
+                    h.Username(configuration["RabbitMQ:Username"]!);
+                    h.Password(configuration["RabbitMQ:Password"]!);
+                });
+
+                cfg.Durable = true;
+
+                cfg.ConfigureEndpoints(context);
+            });
+        });
+
         return services;
     }
 }

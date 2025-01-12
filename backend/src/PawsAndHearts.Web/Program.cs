@@ -17,18 +17,8 @@ public class Program
         
         builder.Services.AddControllers();
         builder.Services.AddEndpointsApiExplorer();
-        builder.Services.AddCustomSwaggerGen();
 
-        builder.Services
-            .AddAccountsModule(builder.Configuration)
-            .AddBreedManagementModule(builder.Configuration)
-            .AddPetManagementModule(builder.Configuration)
-            .AddDiscussionsModule(builder.Configuration)
-            .AddVolunteerRequestsModule(builder.Configuration);
-
-        builder.Services.AddApplicationLayers();
-
-        builder.Services.AddAuthServices(builder.Configuration);
+        builder.Services.AddModules(builder.Configuration);
 
         var app = builder.Build();
         
