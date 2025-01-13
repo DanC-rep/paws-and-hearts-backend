@@ -1,8 +1,16 @@
+using System.Reflection;
+using Elastic.CommonSchema.Serilog;
+using Elastic.Ingest.Elasticsearch;
+using Elastic.Ingest.Elasticsearch.DataStreams;
+using Elastic.Serilog.Sinks;
 using FluentValidation;
 using MassTransit;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.OpenApi.Models;
+using OpenTelemetry.Metrics;
+using OpenTelemetry.Resources;
+using OpenTelemetry.Trace;
 using PawsAndHearts.Accounts.Application;
 using PawsAndHearts.Accounts.Application.Consumers;
 using PawsAndHearts.Accounts.Infrastructure;
@@ -38,7 +46,8 @@ public static class Inject
             .AddVolunteerRequestsModule(configuration)
             .AddApplicationLayers()
             .AddAuthServices(configuration)
-            .AddMessageBus(configuration);
+            .AddMessageBus(configuration)
+            .AddMetrics(configuration);
 
         return services;
     }
@@ -124,15 +133,38 @@ public static class Inject
         this IServiceCollection services,
         IConfiguration configuration)
     {
+        string indexFormat = $"{Assembly.GetExecutingAssembly().GetName().Name?.ToLower().Replace(".", "-")}-{DateTime.UtcNow:dd-MM-yyyy}";
+        
         Log.Logger = new LoggerConfiguration()
-            .WriteTo.Seq(configuration.GetConnectionString("Seq") 
-                         ?? throw new ArgumentNullException("Seq"))
+            .WriteTo.Elasticsearch(
+                [new Uri(configuration.GetConnectionString("Elasticsearch")!)],
+                options =>
+                {
+                    options.DataStream = new DataStreamName(indexFormat);
+                    options.TextFormatting = new EcsTextFormatterConfiguration();
+                    options.BootstrapMethod = BootstrapMethod.Silent;
+                })
             .MinimumLevel.Override("Microsoft.AspNetCore.Hosting", LogEventLevel.Warning)
             .MinimumLevel.Override("Microsoft.AspNetCore.Mvc", LogEventLevel.Warning)
             .MinimumLevel.Override("Microsoft.AspNetCore.Routing", LogEventLevel.Warning)
             .CreateLogger();
 
         services.AddSerilog();
+
+        return services;
+    }
+
+    private static IServiceCollection AddMetrics(
+        this IServiceCollection services, IConfiguration configuration)
+    {
+        services.AddOpenTelemetry()
+            .WithMetrics(b => b
+                .SetResourceBuilder(ResourceBuilder.CreateDefault().AddService("PawsAndHearts.Web"))
+                .AddAspNetCoreInstrumentation()
+                .AddHttpClientInstrumentation()
+                .AddRuntimeInstrumentation()
+                .AddProcessInstrumentation()
+                .AddPrometheusExporter());
 
         return services;
     }
