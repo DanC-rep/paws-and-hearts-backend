@@ -63,7 +63,7 @@ public static class DependencyInjection
         
         Log.Logger = new LoggerConfiguration()
             .WriteTo.Elasticsearch(
-                [new Uri("http://localhost:9200")],
+                [new Uri(configuration.GetConnectionString("Elasticsearch")!)],
                 options =>
                 {
                     options.DataStream = new DataStreamName(indexFormat);
