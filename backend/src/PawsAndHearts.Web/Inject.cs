@@ -18,6 +18,7 @@ using PawsAndHearts.Accounts.Presentation;
 using PawsAndHearts.BreedManagement.Infrastructure;
 using PawsAndHearts.BreedManagement.Presentation;
 using PawsAndHearts.Core.Abstractions;
+using PawsAndHearts.Core.Caching;
 using PawsAndHearts.Core.Options;
 using PawsAndHearts.Discussions.Infrastructure;
 using PawsAndHearts.Discussions.Presentation;
@@ -47,7 +48,8 @@ public static class Inject
             .AddApplicationLayers()
             .AddAuthServices(configuration)
             .AddMessageBus(configuration)
-            .AddMetrics(configuration);
+            .AddMetrics(configuration)
+            .AddDistributedCache(configuration);
 
         return services;
     }
@@ -165,6 +167,22 @@ public static class Inject
                 .AddRuntimeInstrumentation()
                 .AddProcessInstrumentation()
                 .AddPrometheusExporter());
+
+        return services;
+    }
+
+    private static IServiceCollection AddDistributedCache(
+        this IServiceCollection services,
+        IConfiguration configuration)
+    {
+        services.AddStackExchangeRedisCache(options =>
+        {
+            string connString = configuration.GetConnectionString("Redis")!;
+
+            options.Configuration = connString;
+        });
+
+        services.AddSingleton<ICacheService, DistributedCacheService>();
 
         return services;
     }

@@ -116,6 +116,15 @@
       - "5672:5672"
       - "15672:15672"
     restart: always
+    
+  redis:
+    image: redis:latest
+    container_name: redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    restart: always
 
 volumes:
   postgres-data:
@@ -125,3 +134,4 @@ volumes:
   elasticsearch-data:
   prometheus_data:
   grafana_data:
+  redis_data:
